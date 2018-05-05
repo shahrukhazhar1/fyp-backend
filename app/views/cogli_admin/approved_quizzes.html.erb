@@ -1,0 +1,53 @@
+<div class="panel mb25">
+  <div class="panel-heading broder">
+    <div class="col-sm-7">
+      <h1>Approved Quiz Page</h1>
+    </div>
+  </div>
+  <div class="panel-body">
+     <div class="row no-margin">
+        <table class="table table-responsive table-hover" id="table_body_unfinished">
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Quiz Name</th>
+            <th>Subject</th>
+            <th>Topic</th>
+            <th>Grade</th>
+            <th>Description</th>
+            <th>Sample Question</th>
+            <th>Approved By</th>
+            <th>Approval Date</th>
+            <th>View Quiz</th>
+          </tr>
+          <% @quizzes.each_with_index do |quiz_selection, i| %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><%=quiz_selection.quiz_user.email%></td>
+              <td><%= quiz_selection.name %></td>
+              <td><%= quiz_selection.subject %></td>
+              <td><%=quiz_selection.topic %></td>
+              <td><%= quiz_selection.grades.map(&:name).join(",") %></td>
+              <td class="">
+                <span data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="<%= quiz_selection.description %>">Description</span>
+              </td>
+              <td class=""><span data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="<%= quiz_selection.questions.present? ? quiz_selection.questions.first.text : Question.first.try(:text) %>">Question</span></td>
+              <td><%=quiz_selection.approved_by%></td>
+              <td><%=quiz_selection.approval_date%></td>
+              <td>
+                <%= link_to 'View Quiz',quiz_path(quiz_selection), :class => 'btn btn-default' %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+     </div>
+  </div>
+</div>
+
+<!-- popover -->
+    <script>
+    $(function () {
+    $( "[data-toggle='popover']" ).popover( {container: 'body', html: 'true', trigger: 'hover'} );
+     $('[data-toggle="tooltip"]').tooltip()
+    })
+    </script>

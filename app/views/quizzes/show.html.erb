@@ -1,0 +1,95 @@
+<% breadcrumb :questions, @quiz %>
+<div class="panel mb25">
+  <div class="panel-body" id="uniq-panel">
+    <div class="col-md-12">
+      <div class="row">
+        <h2 class="col-md-8">
+          <%= @quiz.name %>
+        </h2>
+        <div class="col-md-4 align-actions-with-heading">
+          <li class="dropdown user-info">
+          <a href="#" class="dropdown-toggle  admin-action" data-toggle="dropdown">
+            Actions<span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <%if @quiz.quiz_status=="incomplete" || current_quiz_admin.present? %>
+            <li><%= link_to 'Edit', edit_quiz_path(@quiz) %></li>
+            <li><%= link_to 'Add Question &plus;'.html_safe, new_quiz_question_path(@quiz) %>
+            </li>
+            <li>
+              <%= link_to 'Add Study Guide', study_guide_quiz_path(@quiz) %>
+            </li>
+            <%end%>
+            <%if current_quiz_admin.present? || current_quiz_user.present? && @quiz.questions.present? && @quiz.quiz_status == "incomplete" %>
+            <li>
+              <%= link_to 'Submit Quiz for Approval'.html_safe, submit_for_approval_quiz_path(@quiz) %>
+            </li>
+          <%end%>
+
+          <%if current_quiz_admin.present? %>
+            <li>
+              <%= link_to 'Approve Quiz'.html_safe, approve_quiz_path(@quiz) %>
+            </li>
+            <li>
+              <%= link_to 'Reject Quiz'.html_safe, reject_quiz_path(@quiz) %>
+            </li>
+            <%end%>
+          </ul>
+        </li>
+
+
+
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div>
+        <b>Standard:</b>
+        <%= @quiz.grades.map(&:name).join(",") %>
+      </div>
+      <div>
+        <b>Subject:</b>
+        <%= @quiz.subject %>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="panel mb25">
+  <div class="panel-body">
+    <h4>Questions</h4>
+    <br>
+    <table class="table table-responsive table-hover">
+      <tr>
+        <th>#</th>
+        <th>Text</th>
+        <th>Priority</th>
+        <th>Created At</th>
+        <th>Details</th>
+      </tr>
+      <% @questions.each_with_index do |question, i| %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= question.text %></td>
+          <% if @quiz.present? %>
+            <td>
+              
+            </td>
+          <% end %>
+          <td><%= question.created_at.to_formatted_s :long_ordinal %></td>
+          <td>
+            <%= link_to 'Details', quiz_question_path(@quiz, question), :class => 'btn btn-default'  %>
+              <%if @quiz.quiz_status=="incomplete" %>
+              <%= link_to 'Edit', edit_quiz_question_path(@quiz, question), :class => 'btn btn-warning' %>
+              <%= link_to [@quiz, question], :method => :delete, :data => {:confirm => 'Are you sure?'}, :class => 'btn btn-danger' do %>
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              <% end %>
+              <%end%>
+            
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+  <!-- </div> -->

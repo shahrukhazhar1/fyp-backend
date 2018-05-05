@@ -1,0 +1,2 @@
+$("#new-q-table").empty();
+$("#new-q-table").html("<%= escape_javascript(render(:partial => 'devices/quiz_table', :locals => {:@quizzes => @quizzes})) %>");

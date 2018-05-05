@@ -1,0 +1,53 @@
+<%if @resource.class.to_s == 'QuizUser' %>
+  <p>Welcome <%= @email %>!</p>
+  <p>You can confirm your account email through the link below:</p>
+
+  <% if Rails.env.production? %>
+    <%= link_to 'Confirm my account', "#{Rails.configuration.quiz_creation_url}/quiz_users/confirmation?confirmation_token=#{@token}" %>
+  <%else%>
+    <%= link_to 'Confirm my account', "http://localhost:5001/quiz_users/confirmation?confirmation_token=#{@token}" %>
+  <%end%>
+<%else%>
+  <p>
+    <b>Welcome <%= @resource.first_name %>!</b>
+  </p>
+  <p>Congratulations on joining the <b>Cogli alpha release.</b></p>
+  <p>
+    Please use the following <b>test credit card number</b> to receive a free subscription: <b>4242 4242 4242 4242</b>.
+    </br>
+    Use any CVV number and any future expiration date.
+  </p>
+  <p>
+    <b>Cogli</b> will be <b>completely free</b> during the alpha period. Your data will be transfered into the beta period.
+  </p>
+  <ul>
+    <li>
+      You can manage your devices and view your child's status on the <%= link_to 'Parent Portal.', url_for(action: 'index', controller: '/home') %>
+    </li>
+    <li>
+      You can view the <a href="<%= Cogli.marketing_domain + '/#faq' %>">FAQ</a> and
+      <b>Cogli's</b> <a href="<%= Cogli.marketing_domain + '/#features' %>">features</a> on
+      the <a href="<%= Cogli.marketing_domain %>">home page.</a>
+    </li>
+    <li>
+      You can download the app on the <a href="<%= Cogli.google_play_store_url %>">Google Play Store.</a>
+    </li>
+  </ul>
+  <p>
+    <b>Please follow the link below to confirm your account and start the tutorial.</b>
+  </p>
+  <p>
+    <%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %>
+  </p>
+  <p>
+    We hope you have a productive time with <b>Cogli</b>.
+    If you have any questions or comments, feel free to reach out to us at <%= mail_to 'support@cogliapp.com' %>
+  </p>
+  <p>
+    Best,
+    <br/>
+    The Cogli Team
+    <br/>
+    Cogliapp.com
+  </p>
+<%end%>

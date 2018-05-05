@@ -1,0 +1,213 @@
+<div class="main-content update-payment-info with-shadow">
+  <h1>Update Payment Information</h1>
+  <%= form_for @subscription, url: url, html: {id: 'payment-form'} do |f| %>
+    <%= f.hidden_field :plan_id %>
+    <div class="row">
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" autocomplete="off" class="card-number form-control" name="card-number">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <label>Security Code</label>
+          <input type="text" class="card-cvc form-control" name="card-cvc">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <label>Expiration Month</label>
+          <select name="specialty" class="card-expiry-month selectpicker">
+           <option value="01">01 - January</option>
+           <option value="02">02 - February</option>
+           <option value="03">03 - March</option>
+           <option value="04">04 - April</option>
+           <option value="05">05 - May</option>
+           <option value="06">06 - June</option>
+           <option value="07">07 - July</option>
+           <option value="08">08 - August</option>
+           <option value="09">09 - September</option>
+           <option value="10">10 - October</option>
+           <option value="11">11 - November</option>
+           <option value="12">12 - December</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group device-msg">
+          <% tutorial_step = Tutorial.find_by_page_name "step_2" %>
+          <% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+          <%#if current_user.present? && tutorial.present? && !tutorial.seen? %>
+          <div class="arrow_bottomRight payment-tutorial" id="payment-tutorial-1">
+            <p><b>Please enter your payment information here.</b> We do require payment information on file in order to activate Cogli on a device. We have a <b>7 day worry-free test period</b>, where you can test Cogli on your child’s phone to see if it is a good fit.</p>
+            <p>We won’t bill your credit card for 7 days. If you decide to cancel in the first 7 Days, there is <b>absolutely no charge.</b></p>
+            <button class="btn btn-primary" id="close-payment-tutorial-2" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>" device-id="<%=@owner.id%>">Ok</button>
+            <span class="ripple"></span>
+          </div>
+          <%#end%>
+          <label>Expiration Year</label>
+          <%- @year = Time.new.year %>
+          <%- @expiry_options = 10.times.map {|i| @year + i} %>
+          <%= select_tag "specialty", options_for_select(@expiry_options, @year), class: "card-expiry-year selectpicker" %>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <label>Card Holder Name</label>
+          <input type="text" class="card-holder-name form-control" name="card-holder-name">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <label>Billing Zip Code</label>
+          <input type="text" class="billing-zip form-control" name="billing-zip">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 payment-errors error">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-4">
+        <div class="form-group">
+          <% if Koudoku.free_trial? %>
+            <button type="submit" class="btn btn-block btn-primary-dark submit-button">
+              Save Billing Information
+              <i class="fa fa-spinner fa-spin hidden-2" aria-hidden="true"></i>
+            </button>
+          <% else %>
+            <button type="submit" class="btn btn-block btn-primary-dark submit-button">
+              Update
+              <i class="fa fa-spinner fa-spin hidden-2" aria-hidden="true"></i>
+            </button>
+            <span class="payment-card-ripple ripple hidden" style="z-index:999;"></span>
+          <% end %>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4">
+        <%= link_to "Cancel", owner_subscriptions_path(@owner), class: 'btn btn-block btn-primary-dark', id: 'sub-cancel-btn' %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+
+<script type="text/javascript">
+
+  function stripeResponseHandler(status, response) {
+
+    if (response.error) {
+      // show the errors on the form
+      $(".payment-errors").text(response.error.message).show();
+      $(".submit-button").removeAttr("disabled");
+      $('.submit-button .fa.fa-spinner').addClass('hidden-2');
+    } else {
+      var form$ = $("#payment-form");
+      // token contains id, last4, and card type
+      // insert the token into the form so it gets submitted to the server
+      form$.append("<input type='hidden' name='subscription[credit_card_token]' value='" + response.id + "'/>");
+      form$.append("<input type='hidden' name='subscription[last_four]' value='" + response.card.last4 + "'/>");
+      form$.append("<input type='hidden' name='subscription[card_type]' value='" + response.card.brand + "'/>");
+      // and submit
+      form$.get(0).submit();
+    }
+  }
+
+$(document).ready(function() {
+  $.validator.addMethod(
+    "regex",
+    function(value, element, regexp) {
+      var re = new RegExp(regexp);
+      return this.optional(element) || re.test(value);
+    },
+    "Please check your input."
+  );
+
+    $.ajax({
+      type: 'POST',
+      url: '/user_settings/check_tutorial',
+      dataType: 'script',
+      data: {
+        step: 'step_2'
+      },
+      success: function(data, textStatus, jqXHR)
+      {
+        if (data == "true") {
+          $("#payment-tutorial-1").addClass("hidden");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {}
+    });
+
+    Stripe.setPublishableKey("<%= Koudoku.stripe_publishable_key %>");
+
+  var card_regex = "^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$";
+
+  $("#payment-form").validate({
+    rules: {
+      "card-number": {
+        required: true,
+        regex: card_regex
+      },
+      "card-cvc": {
+        required: true,
+        regex: "^[0-9]{3,4}$"
+      },
+      "card-holder-name": {
+        required: true
+      },
+      "billing-zip": {
+        required: true,
+        regex: "^\\d{5}(?:[-\\s]\\d{4})?$"
+      }
+    },
+    messages: {
+      "card-number": {
+        required: "Please enter a card number<br/>The test number is 4242424242424242",
+        regex: "Please enter a valid card number (numbers only)<br/>The test number is 4242424242424242"
+      },
+      "card-cvc": {
+        required: "Please enter a security code",
+        regex: "Please enter a valid security code (numbers only)"
+      },
+      "card-holder-name": {
+        required: "Please enter the name on your credit card"
+      },
+      "billing-zip": {
+        required: "Please enter a billing zipcode",
+        regex: "Please enter a valid billing zipcode"
+      }
+    },
+    submitHandler: function() {
+      $('.submit-button').attr("disabled", "disabled");
+
+      $('.submit-button .fa.fa-spinner').removeClass('hidden-2');
+
+      Stripe.createToken({
+        number: $('.card-number').val(),
+        cvc: $('.card-cvc').val(),
+        exp_month: $('.card-expiry-month').val(),
+        exp_year: $('.card-expiry-year').val(),
+        name: $('.card-holder-name').val(),
+        address_zip: $('.billing-zip').val()
+      }, stripeResponseHandler);
+
+      return false;
+    }
+  });
+
+  Stripe.setPublishableKey("<%= Koudoku.stripe_publishable_key %>");
+
+  // By default, don't show errors.
+  $(".payment-errors").hide();
+});
+
+</script>

@@ -1,0 +1,37 @@
+<div class="panel mb25">
+  <div class="panel-heading broder">
+    <div class="col-sm-7">
+      <h1>Submiited Quiz Page</h1>
+    </div>
+  </div>
+  <div class="panel-body">
+     <div class="row no-margin">
+        <table class="table table-responsive table-hover" id="table_body_unfinished">
+          <tr>
+            <th>#</th>
+            <th>Quiz Name</th>
+            <th>Subject</th>
+            <th>Grade</th>
+            <th>Status</th>
+            <th>Review Quiz</th>
+            <th>Create New Version</th>
+          </tr>
+          <% @quizzes.each_with_index do |quiz_selection, i| %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><%= quiz_selection.name %></td>
+              <td><%= quiz_selection.subject %></td>
+              <td><%= quiz_selection.grades.map(&:name).join(",") %></td>
+              <td><%= quiz_selection.quiz_status.try(:titleize) %></td>
+              <td>
+                <%= link_to 'Review Quiz',quiz_path(quiz_selection), :class => 'btn btn-default' %>
+              </td>
+              <td>
+                <%= link_to 'Create New Version',new_verison_quiz_path(quiz_selection), :class => 'btn btn-default' %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+     </div>
+  </div>
+</div>

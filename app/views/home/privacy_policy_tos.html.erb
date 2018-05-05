@@ -1,0 +1,17 @@
+<% if current_user %>
+  <div class="row" id="home-account">
+    <div class="embed-responsive embed-responsive-4by3">
+      <iframe src="<%= asset_url "tos-pp-final.pdf" %>" class="embed-responsive-item"></iframe>
+    </div>
+  </div>
+<% else %>
+  <div class="main-wrapper" style="padding-top: 2rem;">
+    <div class="container cont-logo">
+      <div class="row" id="home-account">
+        <div class="embed-responsive embed-responsive-4by3">
+          <iframe src="<%= asset_url "tos-pp-final.pdf" %>"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

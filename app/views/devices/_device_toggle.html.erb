@@ -1,0 +1,7 @@
+<%= form_for @device, :remote => true do |f| %>
+	<%= f.hidden_field :is_enabled %>
+<% end %>
+<div class="toggle-container">
+  <%= label_tag :switch, "Quiz Blocking", class: "quiz-blocking-switch" %>
+  <%= check_box_tag :switch, @device.is_enabled, @device.is_enabled, :id => @device.id, :'data-toggle' => 'switch', :class => 'ct-blue device-switch device-switch-is-enabled quiz-blocking-toggle' %>
+</div>

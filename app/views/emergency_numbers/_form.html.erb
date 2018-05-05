@@ -1,0 +1,72 @@
+<%= form_for [@device, @emergency_number], html: {class: 'form-horizontal  bordered-group'} do |f| %>
+  <% if @emergency_number.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= "#{pluralize(@emergency_number.errors.count, "error")} prohibited this emergency_number from being saved:" %>
+      </h2>
+      <ul>
+        <% @emergency_number.errors.full_messages.each do |msg| %>
+          <li>
+            <%= msg %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :name %>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :phone_number %>
+    </div>
+    <div class="col-sm-4">
+      <input type="text" value="<%=@emergency_number.phone_number%>" class="form-control emer-num" id="emergency_number_phone_number" name="emergency_number[phone_number]" placeholder="Only numeric digits allowed..."></input>
+      <span class="help-inline number_error"></span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <% submit_btn_text = f.object.new_record? ? 'Create Emergency Number' : 'Update Emergency Number' %>
+      <%= f.submit submit_btn_text, class: 'btn btn-primary emergency-sbmt', id: 'number-sbmt' %>
+      <%= link_to 'Cancel', device_emergency_numbers_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $(".emergency-sbmt").click(function(){
+
+      numVal = $(".emer-num").val();
+      if(/(\d\W*){3,}/.test(numVal) && currentVal != '911'){
+        return true;
+      }
+      else{
+        return false;
+      }
+
+    });
+
+    $(".emer-num").keyup(function(){
+      currentVal = $(this).val();
+      if(/(\d\W*){3,}/.test(currentVal) && currentVal != '911'){
+        $(".number_error").html("");
+        $("#number-sbmt").removeClass("disabled");
+      }
+      else{
+        $(".number_error").html("");
+        $(".number_error").html("Please enter a valid phone number.");
+        $("#number-sbmt").addClass("disabled");
+      }
+
+    });
+
+  });
+</script>

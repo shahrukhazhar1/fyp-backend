@@ -1,0 +1,8 @@
+<%= form_tag(toggle_app_path, {method: :post, remote:true , id:"app-toggle-form-#{install_app.id}"}) do |f| %>
+	<%= hidden_field_tag :id, install_app.id %>
+	<%= hidden_field_tag :block_status, "", id: "block-status-#{install_app.id}" %>
+<% end %>
+<div class="toggle-container">
+  <%= label_tag :switch, "Quiz Blocking", class: "quiz-blocking-switch-1" %>
+  <%= check_box_tag :switch, install_app.block_status, install_app.block_status, :id => install_app.id, :'data-toggle' => 'switch', :class => 'ct-blue app-switch app-switch-is-enabled app-blocker' %>
+</div>

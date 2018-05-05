@@ -1,0 +1,38 @@
+<% breadcrumb :answers, @quiz, @question %>
+<div class="panel mb25">
+  <div class="panel-heading">
+    <div class="col-xs-12">
+      <div class="row">
+        <h1 class="col-md-10">
+          <%= @quiz.name %>
+        </h1>
+        <div class="col-md-2 align-actions-with-heading">
+            <%if @quiz.quiz_status=="incomplete" %>
+            <%= link_to 'Edit', edit_quiz_question_path(@quiz, @question), :class => 'btn btn-default' %>
+            <%= link_to 'Add Question &plus;'.html_safe, new_quiz_question_path(@quiz), class: 'btn btn-primary' %>
+            <%end%>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            <%= @question.text %>
+          </h3>
+        </div>
+        <h5>
+          Hint: <%= @question.hint %>
+        </h5>
+        <div class="panel-body">
+          <% @question.answers.each do |answer| %>
+            <%= button_tag answer.text, :type => :button, :class => "btn btn-#{answer.correct? ? 'success' : 'default'}" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

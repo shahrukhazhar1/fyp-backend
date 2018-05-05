@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+./bin/build
+
+./bin/push
+
+kubectl apply -f kube

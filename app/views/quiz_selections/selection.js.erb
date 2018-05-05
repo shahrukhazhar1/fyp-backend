@@ -1,0 +1,2 @@
+<% removal = @device.quizzes.find_by(id: params[:quiz_id]).present? ? true : false %>
+$('#d_<%=@device.id%>_q_<%=params[:quiz_id]%>_selection').html("<%= escape_javascript(link_to removal.present? ? 'Remove' : 'Add', device_quiz_selection_path(device_id: @device.id,quiz_id: params[:quiz_id], removal: removal),remote: true, class: 'qs-item btn btn-lg btn-primary')%>");

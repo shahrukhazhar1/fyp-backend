@@ -1,0 +1,23 @@
+<% flash.each do |type, messages| %>
+  <%- black_list = [:timedout,
+                    'timedout',
+                    'on_tutorial',
+                    :on_tutorial] %>
+  <%- if !black_list.include?(type) %>
+    <%- Array(messages).each do | message | %>
+      <div class="alert alert-<%=flash_class(type.to_sym)%> alert-dismissible alert-<%= "#{type}" %>">
+        <button type="button", data-dismiss="alert", class="close">&times;</button>
+        <%= message %>
+      </div>
+    <% end %>
+  <% else %>
+    <% if ['on_tutorial', :on_tutorial].include?(type) %>
+      <div class="alert alert-warning alert-dismissible tutorial-flash">
+        <button type="button", data-dismiss="alert", class="close" style="color: #444;">&times;</button>
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        You are currently on the tutorial. You must complete the
+        steps below to access other parts of the website.
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

@@ -1,0 +1,102 @@
+<div class="row">
+  <div class="col-md-5 col-md-offset-3">
+    <div class="form-group select-devices-dropdown">
+      <label for="" class="col-sm-3 control-label">Devices:</label>
+      <div class="col-sm-9">
+      <%= select_tag "owner_id", options_from_collection_for_select(current_user.devices, "id", "name", @owner.id), class: 'selectpicker' %>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<% trial_end_at = current_user.trial_end_at %>
+<% if trial_end_at > Time.now %>
+  <div class="row">
+    <div class="col-xs-12 text-center risk-free-trial-text">
+      <h2>
+        <%= time_ago_in_words trial_end_at %> remaining in your risk free trial.
+      </h2>
+    </div>
+  </div>
+<% end %>
+<br>
+<div class="row fadeInUp">
+  <% current_plan = @subscription.plan %>
+  <% @plans.sort_by(&:display_order).each_with_index do |plan,index| %>
+    <div class="plan-card-col col-xs-12 col-md-4">
+      <div class="plan-cont with-shadow">
+        <%if index == 2%>
+        <div class="device-msg">
+          <div class="head"><%= plan.name.html_safe %></div>
+          <% tutorial_step = Tutorial.find_by_page_name "step_2" %>
+          <% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+          <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+          <div class="ArrowRight subscription-tutorial" id="plan-tutorial-1">
+            <p><b>Congratulations!</b> You are a few steps away from opening up a whole new world of learning for your child. This is the subscription page. <b>Please select a plan</b> that works best for you.</p>
+            <button class="btn btn-sm btn-primary" id="close-plan-tutorial-1" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Ok</button>
+            <span class="ripple"></span>
+          </div>
+          <%end%>
+        </div>
+        <%else%>
+          <div class="head"><%= plan.name.html_safe %></div>
+        <%end%>
+        <div class="description"><%= plan_price(plan) %> <br> <%= plan.features %></div>
+        <div class="custom-checkbox">
+          <%= check_box_tag "plan", '1', plan.id == (current_plan.try :id || 0), id: "plan-#{plan.id}", class: "plan-check plan-check-#{plan.id}" %>
+          <label for="plan" class="plan-tick" onclick=<%= "show_plan(#{plan.id})" %>></label>
+          <% if index == 2 && current_user.present? && tutorial.present? && !tutorial.seen? %>
+            <span class="ripple" style="z-index:999;left:50%;bottom:35%;"></span>
+          <% end %>
+        </div>
+        <p class="status">Status: <%= plan == current_plan ? 'Active' : 'Available' %></p>
+        <span class="payment-ripple-1 ripple hidden" style="z-index: 9999999;top: 450px;left: 200px;"></span>
+        <div class="btn-cont text-center">
+          <% if @subscription.persisted? %>
+            <% if @subscription.plan == plan %>
+              <%= form_for @subscription, url: owner_subscription_path(@owner, @subscription) do |f| %>
+                <%= f.button 'Selected', type: 'submit', disabled: 'disabled', class: "btn btn-large plan-button plan-button-#{plan.id}" %>
+              <% end %>
+            <% else %>
+              <%= form_for @subscription, url: owner_subscription_path(@owner, @subscription) do |f| %>
+                <%= f.hidden_field :plan_id, value: plan.id %>
+                <%= f.button 'Select', type: 'submit', class: "plan-button plan-button-#{plan.id}", style: 'display: none;' %>
+              <% end %>
+            <% end %>
+          <% else %>
+            <% if current_user.stripe_id %>
+              <%= form_for @subscription, url: owner_subscriptions_path(@owner) do |f| %>
+                <%= f.hidden_field :plan_id, value: plan.id %>
+                <%= f.button 'Select', type: 'submit', style: 'display: none;', class: "btn btn-lg plan-button plan-button-#{plan.id}" %>
+              <% end %>
+            <% else %>
+              <%= link_to 'Select', koudoku.new_subscription_path(plan: plan.id, owner_id: @owner), style: 'display: none;', class: "btn btn-large plan-button plan-button-#{plan.id}" %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  
+  $(document).ready(function(){
+    $.ajax({
+      type: 'POST',
+      url: '/user_settings/check_tutorial',
+      dataType: 'script',
+      data: {
+        step: 'step_2'
+      },
+      success: function(data, textStatus, jqXHR)
+      {
+        if (data == "true") {
+          $("#plan-tutorial-1").addClass("hidden");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {}
+    });
+  });
+</script>

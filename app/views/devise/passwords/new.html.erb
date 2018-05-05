@@ -1,0 +1,72 @@
+<div class="user-account-cont">
+  <div class="header-home">
+    <div class="container">
+      <a class="logo" href="/">Cogli</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row fadeInUp">
+
+      <div class="col-md-6">
+        <div class="welcome-cogli-text">
+          <p>
+            <span>Welcome</span>
+            to the Cogli Parent Portal!<br>
+            Here You Can...
+          </p>
+          <ul>
+            <li>Activate or Deactivate the App</li>
+            <li>Choose Quizzes for Your Child’s Phone</li>
+            <li>Monitor Activity and Learning Milestones</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-5 pull-right">
+        <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: 'form-layout' }) do |f| %>
+          <div class="sign-up-cont">
+            <h1 id="forgot-password-header">Forgot your password?</h1>
+
+            <div class="form-group">
+              <%= f.email_field :email, autofocus: true, class: 'form-control', placeholder: 'Email Address', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+            </div>
+            <div class="form-group">
+              <%= f.submit "Send me reset password instructions", :class => "btn-block" %>
+            </div>
+
+            <%= render "devise/shared/links" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#new_user").validate({
+    rules: {
+      "user[email]": {
+        required: true,
+        email: true,
+        remote: {
+          url: "/check_email_present",
+          type: "post"
+        }
+      }
+    },
+    messages: {
+      "user[email]": {
+        required: "Email cannot be blank",
+        email: "Please enter a valid email address",
+        remote: "Email not does exist"
+      }
+    },
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+});
+
+</script>

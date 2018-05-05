@@ -1,0 +1,44 @@
+<ol class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="active">
+    Devices
+  </li>
+</ol>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="main-content">
+      <div class="row">
+        <div class="col-xs-12 col-md-10">
+          <h1>Your Devices</h1>
+        </div>
+        <div class="col-xs-12 col-md-2">
+          <%= link_to 'New Device', new_device_path, :class => 'btn btn-primary new-devices-btn pull-right' %>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row no-margin">
+          <% @devices.each_with_index do |device, i| %>
+            <div class="row device-summary-row with-hover">
+              <div class="col-xs-12 col-sm-offset-3 col-sm-3">
+                <%= link_to device_path(device) do %>
+                  <%= image_tag device.avatar.thumbnail.to_s, :alt => device.name, :width => 50, :height => 50, :class => 'img-circle' %>
+                  <%= device.name %>
+                <% end %>
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                <%= link_to 'Device Settings', device_emergency_numbers_path(device), :class => 'btn btn-default' %>
+                <%= link_to 'Edit', edit_device_path(device), :class => 'btn btn-warning' %>
+                <% if device.removable? %>
+                  <%= link_to 'Delete',  { action: :destroy, id: device.id }, method: :delete, data: { confirm: 'Are you sure?' },:class => 'btn btn-danger' %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+</div>
+</div>

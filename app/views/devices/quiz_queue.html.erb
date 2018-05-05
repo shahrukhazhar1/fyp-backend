@@ -1,0 +1,69 @@
+<div class="container">
+    <ol class="breadcrumb">
+      <li>
+        <a href="/">Home</a>
+      </li>
+      <li>
+        <a href="/devices/<%=@device.id%>"><%=@device.name%></a>
+      </li>
+      <li class="active">
+        Quiz Queue
+      </li>
+    </ol>
+</div>
+<div>
+  <%if @quiz_selections.present? %>
+    <div class="container">
+    <div class="device-query-shopping-bottom">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="quiz-results">
+            <h2>Quiz Queue for <%= @device.name %></h2>
+            <div id="new-q-table">
+              <%= render(:partial => 'quiz_table')%>
+            </div>
+            <div class="move-position" style="display:none;">
+              <label>Move to: </label>
+              <input type="text" id="position-val" name="position" />
+              <br/>
+              <button class="apply-pos">Apply</button>
+            </div>
+            <%= paginate @quiz_selections if @quiz_selections.present? %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%else%>
+    <div class="container">
+      <div class="main-content">
+        <p style = "padding: 0; margin: 0; font-weight: 700; font: '2em'; font-size: x-large;"><%= link_to 'You have no quizzes. Click here to add quizzes.', quiz_shopping_device_path(@device) %></p>
+        <div class="panel-body">
+          <div class="row no-margin">
+          </div>
+        </div>
+      </div>
+    </div>
+  <%end%>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $.ajax({
+      type: 'POST',
+      url: '/user_settings/check_tutorial',
+      dataType: 'script',
+      data: {
+        step: 'step_4'
+      },
+      success: function(data, textStatus, jqXHR)
+      {
+        if (data == "true") {
+          $("#queue-tutorial-1").addClass("hidden");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {}
+    });
+  });
+</script>

@@ -1,0 +1,37 @@
+<div class="panel mb25">
+  <div class="panel-heading broder">
+    <div class="col-sm-7">
+      <h1>Unfinished Quiz Page</h1>
+    </div>
+  </div>
+  <div class="panel-body">
+     <div class="row no-margin">
+        <table class="table table-responsive table-hover" id="table_body_unfinished">
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Quiz Name</th>
+            <!-- <th>Status</th> -->
+            <th>Subject</th>
+            <th>Grade</th>
+            <th>Created at</th>
+            <th>View Quiz</th>
+          </tr>
+          <% @quizzes.each_with_index do |quiz_selection, i| %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><%=quiz_selection.quiz_user.email%></td>
+              <td><%= quiz_selection.name %></td>
+              <!-- <td><%#= humanized_status quiz_selection.quiz %></td> -->
+              <td><%= quiz_selection.subject %></td>
+              <td><%= quiz_selection.grades.map(&:name).join(",") %></td>
+              <td><%= quiz_selection.created_at.to_formatted_s :long_ordinal %></td>
+              <td>
+                <%= link_to 'View Quiz',quiz_path(quiz_selection), :class => 'btn btn-default' %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+     </div>
+  </div>
+</div>

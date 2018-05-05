@@ -1,0 +1,197 @@
+<div class="row">
+  <div class="col-xs-12">
+    <%- tutorial_step = Tutorial.find_by_page_name "step_4" %>
+    <%- tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+    <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+      <div class="arrow_rightTop quiz-queue-basic tutorial-popup" id="queue-tutorial-1">
+        <p>This is the quiz queue. Here you can <b>arrange quizzes</b> to determine the order in which your child must successfully pass their quizzes. Cogli will ask your child to complete the top quiz first. A child can only move to the next quiz if they successfully pass a quiz in a single attempt or if you reorder the quiz queue.</p>
+        <p>When a child passes a quiz, that quiz is marked as <b>passed</b> and the quiz <b>moves to the bottom of the queue.</b></p>
+        <button class="btn btn-sm btn-primary" id="show-queue-tutorial-2">Next</button>
+        <span class="ripple"></span>
+      </div>
+    <%else%>
+    <%end%>
+    <% if @quiz_selections.present? %>
+      <div class="col-xs-12 quiz-queue-table sortable-uniq">
+        <% @quiz_selections.each_with_index do |qs,index| %>
+          <%- quiz = qs.quiz %>
+          <% index_plus = index +1 %>
+          <% test_prep = quiz.test_prep == 'Not Applicable' ? '' : quiz.test_prep %>
+          <div data-item-id = <%= "#{qs.id}"%> index-row = <%="#{index_plus}"%> class="col-xs-12 qqueue-item-row item row-margin with-hover">
+            <div class="col-xs-12 col-sm-6 col-md-4">
+              <h4 class="device-msg">
+                <b><%= quiz.name %></b>
+              </h4>
+              <p>
+                Subject: <b><%= quiz.subject %></b>
+              </p>
+              <p>
+                Test Prep: <b><%= test_prep %></b>
+              </p>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+              <p>
+                Grades: <b><%= quiz.grades.map(&:name).join(", ") %></b>
+              </p>
+              <p>
+                Topic: <b><%= quiz.topic %></b>
+              </p>
+              <p>
+                <%= quiz_status_tag @device.id,quiz.id %>
+              </p>
+            </div>
+            <div class="col-xs-12 col-md-4">
+              <div class="move_box device-msg">
+                <button class="move_btn" data-toggle="collapse" data-target="#move_bg-<%=index_plus%>"><i class="glyphicon glyphicon-plus custom-glyph" id="faye-<%=index_plus%>"></i></button>
+                <div id="move_bg-<%=index_plus%>" class="collapse moveClass hidden">
+                  <div class="arrow_box">
+                    <h5>Position</h5>
+                    <div class="col-lg-12 no-pad click-box">
+                      <input type="text" class="form-control move_input" id="pos-chng-<%=index_plus%>">
+                      <button class="btn button_sub move-pos">Move</button>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
+                </div>
+              </div>
+              <%if index==@quiz_selections.length-1 && current_user.present? && tutorial.present? && !tutorial.seen? %>
+                <div class="arrow_rightTop quiz-queue-move-tutorial tutorial-popup hidden" id="queue-tutorial-2">
+                  <p>You can <b>drag and drop quizzes</b> to organize the queue, or you can select the <i class="glyphicon custom-glyph glyphicon-plus"></i> to <b>change the quiz order.</b> You can remove a quiz by <b>clicking "REMOVE".</b></p>
+                  <button class="btn btn-sm btn-primary tstt" id="show-queue-tutorial-3" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Next</button>
+                  <span class="ripple"></span>
+                </div>
+              <%end%>
+
+              <% removal = @device.quizzes.find_by(id: quiz.id).present? ? true : false %>
+              <p class="" id ='<%= "d_#{@device.id}_q_#{quiz.id}_selection"%>'>
+                <%= link_to removal.present? ? "Remove" : "Add",device_quiz_selection_path(device_id: @device.id,quiz_id: quiz.id, removal: removal),remote: true, class: "qs-item btn btn-lg btn-primary" %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+  <div class="quiz-queue-tutorial-next">
+    <button id ="show-queue-tutorial-4" class="btn btn-primary hidden" device-id="<%=@device.id%>" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Next</button>
+    <span class="ripple hidden" id="quiz-queue-next"></span>
+  </div>
+
+  <div class="ArrowRight tutorial-popup quiz-queue-hint-3 hidden" id="queue-tutorial-3">
+    <p>Once you’ve organized the quiz queue to your liking, <b>click the next button.</b></p>
+    <button class="btn btn-sm btn-primary" id="close-quiz-queue" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Ok</button>
+  </div>
+<%end%>
+
+<script type="text/javascript"> 
+  $(document).ready(function(){
+    var deviceID = "<%=@device.id%>"
+    var pageNo = "<%=params[:page]%>";
+    var itemID, itemPosition, tstItem;
+
+    $(".move_btn").bind("click touch", function() {
+      if ($(".custom-glyph").hasClass("glyphicon-minus")){
+        $(".custom-glyph").removeClass("glyphicon-minus");
+        $(".custom-glyph").addClass("glyphicon-plus");
+      }
+      $(".custom-glyph").addClass("glyphicon-plus");
+      btnID = this.getAttribute("data-custom-id");
+      getIndex = this.closest('.qqueue-item-row').getAttribute("index-row");
+      tst = "#" +"move_bg-" + getIndex;
+      customID = "#" +"faye-" + getIndex;
+      if ($(tst).hasClass("hidden"))
+      {
+        $(customID).removeClass("glyphicon-plus");
+        $(customID).addClass("glyphicon-minus");
+        tstItem = 1;
+      }
+
+      else
+      {
+        $(customID).removeClass("glyphicon-minus");
+        $(customID).addClass("glyphicon-plus");
+        tstItem = 0;
+      }
+
+      $(".moveClass").addClass("hidden");
+      if(tstItem == 1){
+        $(tst).removeClass("hidden");
+        $(tst).show();
+      }
+      else{
+        $(tst).removeClass("hidden");
+        $(tst).addClass("hidden");
+        $(tst).hide();
+      }
+    });
+
+
+    $(".move-pos").bind("click touch", function() {
+      itemPosition = this.closest('.qqueue-item-row').getAttribute("data-item-id");
+      getIndex = this.closest('.qqueue-item-row').getAttribute("index-row");
+
+      getPos = $("#pos-chng-"+getIndex).val();
+
+      getPos = parseInt(getPos);
+
+      if (!isNaN(parseInt(getPos))) 
+      {
+        itemID = getPos;
+        itemID = parseInt(itemID);
+        if(itemID&&itemID!=0){
+          itemID = itemID -1;
+        }
+        return $.ajax({
+          type: 'POST',
+          url: '/update_quiz_position',
+          dataType: 'script',
+          data: {
+            id: deviceID,
+            page: pageNo,
+            thing: {
+              thing_id: itemPosition,
+              row_order_position: itemID
+            }
+          }
+        });
+      }
+    });
+
+    if ($('.sortable-uniq').length > 0) {
+      return $('.sortable-uniq').sortable({
+        axis: 'y',
+        items: '.item',
+        cursor: 'move',
+        sort: function(e, ui) {
+          return ui.item.addClass('active-item-shadow');
+        },
+        stop: function(e, ui) {
+          ui.item.removeClass('active-item-shadow');
+          return ui.item.children('td').effect('highlight', {}, 1000);
+        },
+        update: function(e, ui) {
+          var item_id, position;
+          item_id = ui.item.data('item-id');
+          position = ui.item.index();
+          return $.ajax({
+            type: 'POST',
+            url: '/update_row_order',
+            dataType: 'script',
+            data: {
+              id: deviceID,
+              page: pageNo,
+              thing: {
+                thing_id: item_id,
+                row_order_position: position
+              }
+            }
+          });
+        }
+      });
+    }
+  });
+</script>

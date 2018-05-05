@@ -1,0 +1,100 @@
+<%= form_for @device, html: {class: 'form-horizontal bordered-group device-new-form'} do |f| %>
+  <% if @device.errors.any? %>
+    <div id="error_explanation">
+      <ul>
+        <% @device.errors.full_messages.each do |msg| %>
+          <li class="alert alert-danger">
+            <%= msg %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :name %>
+    </div>
+    <div class="col-sm-4 device-msg">
+      <%= f.text_field :name, class: 'form-control' %>
+      <% tutorial_step = Tutorial.find_by_page_name "step_1" %>
+      <% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+      <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+        <div class="arrowLeft device-tutorial" id="device-tutorial-new">
+          <p>This should be the first name of your child. For example Bobby.</p>
+          <button class="btn btn-primary" id="close-device-new-tutorial" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Ok</button>
+        </div>
+      <%end%>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :emergency_number %>
+    </div>
+
+    <div class="col-sm-4">
+      <%= hidden_field_tag "device[emergency_numbers_attributes][0][name]", current_user.username %>
+      <input type="text" class="form-control emer-num" value="<%=@parent_number%>" id="emergency_numbers_attributes_0_phone_number" name="device[emergency_numbers_attributes][0][phone_number]" placeholder="Only numeric digits allowed..."></input>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Avatar</label>
+    <div class="col-sm-10">
+      <%= f.file_field :avatar %>
+      <%= f.hidden_field :avatar_cache %>
+      <p class="help-block">Optional...</p>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <%= f.submit class: 'btn btn-primary' %>
+      <%= link_to 'Cancel', devices_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+<% end %>
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+  jQuery.validator.addMethod("isValidNumber", function(value, element) {
+    return (/(\d\W*){3,}/.test(value));
+  }, "* Emergency Number must be valid");
+
+  jQuery.validator.addMethod("not911", function(value, element) {
+    return (value != '911')
+  }, "Emergency Number must not be 911");
+
+  $(".device-new-form").validate({
+
+    rules: {
+      "device[emergency_numbers_attributes][0][phone_number]": {
+        required: true,
+        isValidNumber: true,
+        not911: true
+      },
+
+      "device[name]": {
+        required: true
+      }
+    },
+    messages: {
+      "device[name]": {
+        required: "Please enter a name for the device (Bobby, Katherine, etc...)"
+      },
+      "device[emergency_numbers_attributes][0][phone_number]": {
+        required: "Please enter an emergency number"
+      }
+    },
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+});
+
+</script>

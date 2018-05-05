@@ -1,0 +1,5 @@
+<% if params['update'] == 'card' %>
+  <%= render 'card', title: "Update Your Payment Information", url: owner_subscription_path(@owner, @subscription) %>
+<% else %>
+  <%= render 'pricing_table' %>
+<% end %>

@@ -1,0 +1,170 @@
+<div class="user-account-cont">
+  <div class="header-home">
+    <div class="container">
+      <a class="logo" href="/">Cogli</a>
+
+      <div class="col-xs-12 col-md-8 login-cont pull-right">
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: {class: 'form-inline'}) do |f| %>
+          <div class="form-group">
+            <%= f.label :email, 'Email Address', :class => 'sr-only' %>
+            <%= f.email_field :email, class: 'form-control', placeholder: 'Email Address', required: true, :autocomplete => 'off' %>
+          </div>
+          <div class="form-group">
+            <!-- <label class="sr-only" for="exampleInputPassword3">Password</label> -->
+            <%= f.label :email, 'Password', :class => 'sr-only' %>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password', required: true %>
+          </div>
+          <%= f.button 'Sign In' %>
+          <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+            <%= link_to "Forgot Password?", new_password_path(resource_name), :class => 'forgot-link' %>
+          <% end -%>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row fadeInUp">
+
+      <div class="col-xs-12 col-md-6">
+        <div class="welcome-cogli-text">
+          <p>
+            <span>Welcome</span>
+            to the Cogli Parent Portal!<br>
+            Here You Can...
+          </p>
+          <ul>
+            <li>Activate or Deactivate the App</li>
+            <li>Choose Quizzes for Your Child’s Phone</li>
+            <li>Monitor Activity and Learning Milestones</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-5 pull-right">
+        <div class="sign-up-cont">
+          <h1 id="new_registration text-primary">Let’s Get Started Create An Account!</h1>
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name),html: {class: "signup-form"}) do |f| %>
+            <div class="form-group">
+              <%= f.email_field :email, class: 'form-control signup-email', placeholder: 'Email Address', required: true %>
+              <span class="help-inline email_error"></span>
+            </div>
+
+            <div class="form-group">
+              <%= f.text_field :first_name, class: 'form-control firstname', placeholder: 'First Name', required: true %>
+              <span class="help-inline fname_error"></span>
+            </div>
+
+            <div class="form-group">
+              <%= f.text_field :last_name, class: 'form-control lastname', placeholder: 'Last Name', required: true %>
+              <span class="help-inline lname_error"></span>
+            </div>
+
+            <div class="form-group">
+              <%= f.password_field :password, autocomplete: "off", id: 'user-pwd' ,class: 'form-control signup-pwd', placeholder: 'Password (8 characters minimum)' %>
+              <span class="help-inline p_error"></span>
+            </div>
+            <div class="form-group">
+              <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control signup-pwd-cnf', placeholder: 'Repeat Password', required: true %>
+            </div>
+            <div class="form-group form-checkbox">
+              <%= label_tag 'over_18' do %>
+                <%= check_box_tag 'over_18', '1', false, class: 'form-control form-checkbox', required: true %>
+                Confirm you are 18 years of age or older?
+              <% end %>
+            </div>
+            <div class="form-group form-checkbox">
+              <%= label_tag 'tos' do %>
+                <%= check_box_tag 'tos', '1', false, class: 'form-control form-checkbox', required: true %>
+                Confirm you have read the
+                <u><a href="/privacy_policy_tos" target="_blank">terms of service</a></u>
+                and
+                <u><a href="/privacy_policy_tos" target="_blank">privacy policy</a></u>?
+              <% end %>
+            </div>
+            <div class="form-group">
+              <%= f.button 'Create Account', :class => 'btn-block signup-sbmt' %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $.validator.addMethod(
+    "isEqual",
+    function(value, element, v) {
+      return this.optional(element) || v == value;
+    },
+    "Please correct this value"
+  );
+
+  $(".signup-form").validate({
+
+    rules: {
+      "user[email]": {
+        required: true,
+        email: true,
+        remote: {
+          url: "/check_email",
+          type: "post"
+        }
+      },
+      "user[first_name]": {
+        required: true
+      },
+      "user[last_name]": {
+        required: true
+      }
+      ,
+      "user[password]": {
+        required: true,
+        minlength: 8
+      },
+      "user[password_confirmation]": {
+        equalTo: "#user-pwd"
+      },
+      "over_18": {
+        isEqual: "1"
+      },
+      "tos": {
+        isEqual: "1"
+      }
+    },
+    messages: {
+      "user[email]": {
+        required: "Email cannot be blank",
+        email: "Please enter a valid email address",
+        remote: "Email already exists"
+      },
+      "user[first_name]": {
+        required: "Please enter your first name"
+      },
+      "user[last_name]": {
+        required: "Please enter your last name"
+      },
+      "user[password]": {
+        required: "Please provide a password",
+        minlength: "Your password must be at least 8 characters long"
+      },
+      "user[password_confirmation]": {
+       equalTo: "Password and Confirm Password does not match"
+      },
+      "over_18": {
+        equalTo: "Please confirm you are over 18"
+      },
+      "tos": {
+        equalTo: "Please confirm you have read the terms of service and privacy policy"
+      }
+    },
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+
+});
+
+</script>

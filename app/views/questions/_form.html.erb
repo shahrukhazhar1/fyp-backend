@@ -1,0 +1,82 @@
+<%= nested_form_for [@device, @quiz, @question], html: {class: 'form-horizontal'} do |f| %>
+  <% if @question.errors.any? %>
+    <div id="error_explanation">
+      <h2>Please fix following issues :</h2>
+      <ul>
+        <% @question.errors.full_messages.each do |msg| %>
+          <li>
+            <%= msg %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :text, "Question" %>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :text, class: 'form-control' %>
+    </div>
+  </div>
+  <div id="answers">
+    <%= f.fields_for :answers do |a| %>
+      <div class="form-group">
+        <div class="col-sm-2 control-label">
+          <%= a.label :textm, "Answer" %>
+        </div>
+        <div class="col-sm-4">
+          <%= a.text_field :text, class: 'form-control' %>
+        </div>
+        <span class="input-group-btn">
+          <%= a.link_to_remove 'Remove answer', class: 'btn btn-danger' %>
+        </span>
+        <div class="col-sm-offset-2 col-sm-2">
+          <%= a.label :correct %>
+          <%= a.check_box :correct %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <%= f.link_to_add 'Add Answer', :answers, :data => { :target => "#answers", :maximum => 4}, :class => 'btn btn-success'  %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :hint, "Hint" %>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :hint, class: 'form-control' %>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <label>Comment Box for this Question</label>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_area :comment, class: 'form-control' %>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  <hr>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <%= f.submit class: 'btn btn-primary' %>
+      <%= link_to 'Cancel', cancel_link, :class => 'btn btn-default' %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,28 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+  <div>
+    <p>Hello <%=@username%>,</p>
+    <p>
+      We noticed little activity in your account during the last 7 days.
+    </p>
+    <p>
+      At Cogli, we are driven to provide you with the best quality product.
+    </p>
+    <p>
+      We appreciate any feedback to help us continue offering our product.
+      <br/>
+      At your discretion, contact our customer service representatives at: <a href="mailto:support@cogliapp.com">support@cogliapp.com</a> to provide feedback.
+    <p>
+      Best,
+      <br/>
+      The Cogli Team
+      <br/>
+      Cogliapp.com
+    </p>
+    <%= link_to 'Click here to be removed from the mailing list', @unsubscribe_url %>
+  </div>
+</body>

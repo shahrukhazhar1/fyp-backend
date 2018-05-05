@@ -1,0 +1,50 @@
+<div class="col-md-6">
+  <div class="account-management-cont">
+    <h2>Account Management</h2>
+    <h3>Change Password</h3>
+    <%= form_for(current_quiz_user, as: :quiz_user, url: registration_path(:quiz_user), html: { method: :put }) do |f| %>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>New Password:</label>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control' %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>New Password Confirmation:</label>
+            <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control' %>
+           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Current Password:</label>
+            <%= f.password_field :current_password, autocomplete: "off", class: 'form-control', required: true %>
+          </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Current Password Confirmation:</label>
+              <%= f.password_field :current_password_confirmation, autocomplete: "off", class: 'form-control', required: true %>
+            </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <!-- <a href="" class=>Cancel</a> -->
+            <%= link_to 'Cancel', :back, :class => "btn-block cancel-btn" %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <!-- <a href="" class="btn-block update-btn">Update</a> -->
+            <%= f.submit 'Update', :class => "btn-block update-btn", :id=>"unique-updt-btn" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="main-content" id="devices-show">
+  <div class="progress-device">
+    <h1>Hello <%=@device.user.username %>,</h1>
+    <h3>Weekly Progress Report from <%=@weekly_report.start_date.strftime("%B %e, %Y")%> to <%=@weekly_report.end_date.strftime("%B %e, %Y")%> for <%=@device.name%> </h3>
+    <div class="weekly-report">
+      <p class="report-detail">
+        <% if @quiz_names.empty? %>
+          <b><%=@device_name%></b> did not complete any quizzes this week.
+        <% else %>
+          <b><%=@device_name%></b> completed <%=@complete_quiz_count%> quizzes, these included:
+          <b><%= @quiz_names.to_sentence %></b>
+        <% end %>
+      </p>
+      <p class="report-detail">
+        <b><%=@device_name%></b> was asked a total of <%=@total_question_count%> questions this week
+        and correctly answered <%=@correct_question_count%> of them, meaning that on average <b><%=@device_name%></b> correctly answered a question <%=@correct_percentage%>% of the time.
+      </p>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <form class="form-horizontal">
+          <div class="form-group">
+          <label for="" class="col-sm-2 control-label">Chart Name</label>
+           <div class="col-sm-4">
+            <select id="progress-chart-type" class="selectpicker">
+              <option value="0">Quiz Activity</option>
+              <option value="1">Completed Quizzes</option>
+            </select>
+           </div>
+          </div>
+        </form>
+        <canvas id="quiz-activity-chart" data-chart-stats="<%= @quiz_results_stats.to_s %>" style="height 300px;"></canvas>
+        <div id="tooltip-0" class="chartjs-tooltip" style="display: none"></div>
+        <div id="tooltip-1" class="chartjs-tooltip" style="display: none"></div>
+        <canvas id="milestones-chart" data-chart-stats="<%= @quiz_results_stats_bar.to_s %>" style="height: 300px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>

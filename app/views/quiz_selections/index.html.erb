@@ -1,0 +1,51 @@
+<% breadcrumb :choose_quizzes, @device %>
+<div class="col-sm-12">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <%= search_form_for @q, :url => device_quiz_quiz_selections_path(@device, 0) do |f| %>
+        <div class="form-group col-sm-6">
+          <%= f.search_field :name_cont, :class => 'form-control', :placeholder => 'Search quiz from other devices...'  %>
+        </div>
+        <div class="form-group col-sm-5">
+          <%= f.select :grade_id_eq, options_from_collection_for_select(Grade.all.order(:priority), :id, :name, @q.grade_id_eq),
+            {:include_blank => 'All Standards'}, :class => 'form-control' %>
+        </div>
+        <div class="col-sm-1">
+          <%= f.submit 'Search', :class => 'btn btn-default' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="col-sm-8">
+    <h1>Choose Quizzes for '<%= @device.name %>'</h1>
+  </div>
+  <%= form_tag device_quiz_quiz_selections_path(@device, 0), :method => :post do %>
+    <div class="col-sm-4">
+      <h2 class="pull-right">
+        <%= link_to('Clear Filters', device_quiz_quiz_selections_path(@device, 0),
+          :class => 'btn btn-danger') if params[:q].try :present? %>
+        <%= submit_tag 'Choose Selected', :class => 'btn btn-info' %>
+      </h2>
+    </div>
+    <table class="table table-responsive table-hover">
+      <tr>
+        <th>#</th>
+        <th>Selection</th>
+        <th><%= sort_link(@q, :name, "Name") %></th>
+        <th><%= sort_link(@q, :subject) %></th>
+        <th><%= sort_link(@q, :grade_priority, 'Standard') %></th>
+        <th><%= sort_link(@q, :created_at) %></th>
+      </tr>
+      <% @quizzes.each_with_index do |quiz, i| %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= check_box_tag :'quizzes[]', quiz.id %></td>
+          <td><%= quiz.name %></td>
+          <td><%= quiz.subject %></td>
+          <td><%= quiz.grades.map(&:name).join(",") %></td>
+          <td><%= quiz.created_at.to_formatted_s :long_ordinal %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>

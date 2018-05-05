@@ -1,0 +1,170 @@
+<ol class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="active">
+    <%=@device.name%>
+  </li>
+</ol>
+
+<!-- Modal -->
+<div id="deviceModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="arrowLeft device-new-popup" id="device-tutorial-popup">
+      <p>Follow These Steps to Connect Billy’s Device</p>
+      <p>1. Take your child’s device.</p>
+      <p>2. Using the device, navigate to the Google Playstore- [Playstore URL]</p>
+      <p>3. Download Cogli</p>
+      <p>4. Open Cogli</p>
+      <p>5. Log In using your username and password</p>
+      <p>6. Once logged in select Billy’s Device on the app.</p>
+      <button style="margin-left: 60px;" class="btn btn-primary" id="device-modal-close">Okay I’ve Done That</button>
+    </div>
+  </div>
+</div>
+
+<div class="arrowLeft device-not-connect hidden" id="device-connect-error">
+  <p>Sorry, we were unable to connect To the device. Please make sure You have followed all steps listed, And that device is connected to Wi-Fi.</p>
+  <button class="btn btn-primary" id="dc-close">Ok</button>
+</div>
+<% tutorial_step = Tutorial.find_by_page_name "step_6" %>
+<% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+<div class="main-content" id="devices-show">
+  <div class="progress-device device-msg">
+    <h1>Progress for <%= @device.name %></h1>
+    <% tutorial_step = Tutorial.find_by_page_name "step_6" %>
+    <% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+    <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+    <div class="arrowLeft device-progress-tutorial tutorial-popup" id="device-tutorial-1">
+      <p>This page lets you <b>see how your child is doing.</b> You can see what they are learning, areas of improvement, and <b>their daily quiz activity.</b></p>
+      <button class="btn btn-sm btn-primary" id="show-device-tutorial-2">Next</button>
+      <span class="ripple"></span>
+    </div>
+    <%end%>
+    <div class="row">
+      <div class="col-md-8">
+        <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+        <div class="arrow_bottomRight device-chart-tutorial tutorial-popup hidden" id="device-tutorial-2">
+          <p>This chart allows you to view the <b>number of correct and incorrect answers</b> your child provides on a daily basis. And the <b>number of successful and unsuccessful quiz attempts.</b></p>
+          <button class="btn btn-sm btn-primary" id="show-device-tutorial-4">Next</button>
+          <span class="ripple" style="z-index:999;"></span>
+        </div>
+        <%end%>
+
+        <form class="form-horizontal">
+          <div class="form-group device-msg">
+          <label for="" class="col-sm-2 control-label">Chart Name</label>
+           <div class="col-sm-4">
+            <select id="progress-chart-type" class="selectpicker">
+              <option value="0">Quiz Activity</option>
+              <option value="1">Completed Quizzes</option>
+            </select>
+           </div>
+
+          </div>
+        </form>
+
+
+        <canvas id="quiz-activity-chart" data-chart-stats="<%= @quiz_results_stats.to_s %>" style="height 300px;"></canvas>
+        <div id="tooltip-0" class="chartjs-tooltip" style="display: none"></div>
+        <div id="tooltip-1" class="chartjs-tooltip" style="display: none"></div>
+        <canvas id="milestones-chart" data-chart-stats="<%= @quiz_results_stats_bar.to_s %>" style="height: 300px;"></canvas>
+      </div>
+
+
+      <div class="col-md-3 col-md-offset-1">
+        <div class="device-settings">
+          <span class="device-name"><%= @device.name %></span>
+          <%= render 'device_toggle'%>
+        <%= link_to "Device Settings", device_emergency_numbers_path(@device),class: "btn btn-block btn-primary-dark actions" %>
+          <%= link_to "Quiz Queue", quiz_queue_device_path(@device),class: "btn btn-block btn-primary-dark actions" %>
+          <%= link_to "Find Quizzes", quiz_shopping_device_path(@device),class: "btn btn-block btn-primary-dark actions" %>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="recent-activities-cont">
+    <div class="row">
+      <div class="col-md-12 device-msg">
+
+          <%if @quiz_results.present? %>
+            <h1>Recent Activity</h1>
+          <%else%>
+            <h1>There is no recent activity</h1>
+          <%end%>
+            <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+            <div class="arrow_leftTop tutorial-end tutorial-popup hidden" id="device-tutorial-4">
+              <p>This concludes our tutorial on the core features of Cogli! We hope you and your child find Cogli both <b>challenging and rewarding.</b> We are constantly working to improve the overall app and user experience. Please share your feedback both positive and negative at <a href="mailto:support@cogli.com" target="_blank"><b>support@cogli.com</b></a>.</p>
+              <button class="btn btn-primary" id="device-tutorial-end" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">OK</button>
+              <span class="ripple"></span>
+            </div>
+            <%end%>
+
+            <% @quiz_results.each do |quiz_result| %>
+              <div class="activity-row">
+                <div class="top-bar clearfix">
+                  <span class="time"><%= quiz_result.created_at.strftime("%I:%M %P") %></span>
+                  <span class="date"><%= quiz_result.created_at.to_date %></span>
+                </div>
+                <div class="bottom-bar clearfix">
+                  <div class="quiz"><span>Q.</span> <%= quiz_result.quiz_selection.quiz.name %></div>
+                  <div class="progress-bar-outer">
+                    <span>Score: <%= get_quiz_percentage(quiz_result) %>%</span>
+                    <div class="progress">
+                      <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:<%=get_quiz_percentage(quiz_result)%>%;">
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+        </div>
+
+      </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    // $.ajax({
+    //   type: 'POST',
+    //   url: '/user_settings/device_status',
+    //   dataType: 'script',
+    //   success: function(data, textStatus, jqXHR)
+    //   {
+    //     if (data == "true") {
+    //       $("#device-tutorial-1").addClass('hidden');
+    //       $("#deviceModal").modal('show');
+    //     }
+    //     else{
+    //       $("#deviceModal").modal('hide');
+    //     }
+    //   },
+    //   error: function (jqXHR, textStatus, errorThrown)
+    //   {}
+    // });
+
+    $.ajax({
+      type: 'POST',
+      url: '/user_settings/check_tutorial',
+      dataType: 'script',
+      data: {
+        step: 'step_6'
+      },
+      success: function(data, textStatus, jqXHR)
+      {
+        if (data == "true") {
+          $("#device-tutorial-1").addClass("hidden");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {}
+    });
+  });
+</script>

@@ -1,0 +1,20 @@
+
+	<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'form-layout'}) do |f| %>
+  <div class="text-center mb15"> <h1>Cogli</h1> </div>
+  <p class="text-center mb30">Welcome to Cogli. Please Sign Up to continoue...</p>
+  <%= devise_error_messages! %>
+  <div class="form-group">
+	  <%= f.email_field :email, class: 'form-control', placeholder: 'Email Address', required: true %>
+	</div>
+  <div class="form-group">
+    <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password (8 characters minimum)', required: true %>
+  </div>
+  <div class="form-group">
+    <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Repeat Password', required: true %>
+  </div>
+  <div class="form-group">
+  <%= f.button 'Create Account', :class => 'btn-block' %>
+  </div>
+
+<% end %>
+<%= render "devise/shared/links" %>

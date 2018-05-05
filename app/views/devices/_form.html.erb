@@ -1,0 +1,70 @@
+<%= form_for @device, html: {class: 'form-horizontal bordered-group'} do |f| %>
+  <% tutorial_step = Tutorial.find_by_page_name "step_1" %>
+  <% tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+
+  <%- n_errors = @device.errors.full_messages_for(:name) %>
+  <div class="form-group <%= 'error' if !n_errors.empty? %>">
+    <div class="col-sm-2 control-label">
+      <%= f.label :name %>
+    </div>
+    <div class="col-sm-4 device-msg">
+      <div id="error_explanation">
+        <ul>
+          <% n_errors.each do |msg| %>
+            <li class="error">
+              <%= msg %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <%= f.text_field :name, class: 'form-control' %>
+      <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+        <div class="arrowLeft device-tutorial" id="device-tutorial-edit">
+          <p>Use this field to <b>identify the device.</b> For example, use the <b>name of your child.</b></p>
+          <button class="btn btn-sm btn-primary" id="close-device-edit-tutorial" device-id="<%=@device.id%>" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Ok</button>
+        </div>
+      <%end%>
+    </div>
+  </div>
+
+  <%if current_user.present? && tutorial.present? && !tutorial.seen? %>
+    <%- en_errors = @device.errors[:"emergency_numbers.phone_number"] %>
+    <div class="form-group <%= 'error' if !en_errors.empty? %>">
+      <div class="col-sm-2 control-label">
+        <%= f.label :emergency_number %>
+      </div>
+
+      <div class="col-sm-4">
+        <%= hidden_field_tag "device[emergency_numbers_attributes][0][name]", current_user.username %>
+        <div id="error_explanation">
+          <ul>
+            <% en_errors.each do |msg| %>
+              <li class="error">
+                <%= "Phone number #{msg}" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+        <input type="text" class="form-control emer-num" value="<%=@parent_number%>" id="emergency_numbers_attributes_0_phone_number" name="device[emergency_numbers_attributes][0][phone_number]" placeholder="Only numeric digits allowed..."></input>
+        <div class="arrowLeft device-tutorial hidden" id="device-tutorial-edit-2">
+          <p><b>In addition to 911</b> the device will always allowed to call this number. <b>Enter your number here.</b></p>
+          <button class="btn btn-sm btn-primary" id="close-device-edit-tutorial-2" device-id="<%=@device.id%>" tutorial-id="<%=tutorial.id%>" user-id="<%=current_user.id%>">Ok</button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Avatar</label>
+    <div class="col-sm-10">
+      <%= f.file_field :avatar %>
+      <%= f.hidden_field :avatar_cache %>
+      <p class="help-block">Optional...</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <%= f.submit class: 'btn btn-primary' %>
+      <%= link_to 'Cancel', devices_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+<% end %>

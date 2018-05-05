@@ -1,0 +1,57 @@
+<div class="row ">
+  <div class="col-md-9">
+    <div class="quiz-cont fadeInUp">
+      <% if current_user.devices.empty? %>
+        <h1>You have no registered devices</h1>
+        <br>
+        <%= link_to 'Click here to create a new device.', new_device_path, :class => 'lead' %>
+      <% else %>
+        <h1>Recent Activity</h1>
+
+        <% @quiz_results.each do |quiz_result| %>
+          <div class="quiz-row">
+            <div class="top-bar clearfix">
+              <span class="time"><%= quiz_result.created_at.strftime("%I:%M %P") %></span>
+              <span class="date"><%= quiz_result.created_at.to_date %></span>
+            </div>
+            <div class="quiz"><span>Q.</span> <%= quiz_result.quiz_selection.quiz.name %></div>
+            <div class="bottom-bar clearfix">
+
+              <%= link_to device_path(quiz_result.device_id), {class: "device-navbar-item"} do %>
+                <span class="device"><%= quiz_result.device.name %></span>
+              <% end %>
+
+              <div class="progress-bar-outer">
+                <span>Score: <%= get_quiz_percentage(quiz_result) %>%</span>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" aria-valuenow="<%= get_quiz_percentage(quiz_result) %>" aria-valuemin="0" aria-valuemax="100" style="width: <%= get_quiz_percentage(quiz_result) %>%;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-md-3 device-catTop">
+    <div class="manage-devices">
+      <h2>Manage Devices</h2>
+      <ul>
+        <% current_user.devices.each do |device| %>
+          <li><%= link_to device.name, device %></li>
+        <% end %>
+      </ul>
+     </div>
+
+    <div class="find-quiz">
+      <h2>Find Quizzes</h2>
+      <ul>
+        <% current_user.devices.each do |device| %>
+          <li><%= link_to device.name,quiz_shopping_device_path(device) %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

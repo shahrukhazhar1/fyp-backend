@@ -1,0 +1,103 @@
+<%= form_for [@device, @quiz], html: {class: 'form-horizontal bordered-group'} do |f| %>
+  <% if @quiz.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= "#{pluralize(@quiz.errors.count, "error")} prohibited this quiz from being saved:" %>
+      </h2>
+      <ul>
+        <% @quiz.errors.full_messages.each do |msg| %>
+          <li>
+            <%= msg %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <label>Quiz Name</label>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :subject %>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :subject, class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :topic %>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :topic, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <label>Test Prep</label>
+    </div>
+    <div class="col-sm-4">
+      <% array = Array.new %>
+      <% array = ["SAT Reading","SAT Math","SAT Writing and Language","ACT Math","ACT Reading", "ACT English", "ACT Science","Not Applicable"] %>
+      
+      <%= f.select :test_prep, array.map {|arr| [arr,arr] }, {}, :class => 'form-control' %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :grade_id, 'Grade Level' %>
+    </div>
+    <div class="col-sm-4">
+      <select id="quiz_grade_id" name="grade_all[]" class="form-control select-grade" multiple="multiple">
+        <% grades = Grade.all.order(:priority) %>
+        <% grades.each do |grade| %>
+          <option value="<%= grade.id %>"><%= grade.name%></option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+       <label>Passing Percentage </label>
+    </div>
+    <div class="col-sm-4">
+      <%= f.text_field :passing_percentage, {:class => 'form-control', :name => "quiz[passing_percentage]", :onkeypress => "return event.charCode >= 48  event.charCode ", :type => "text"} %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-2 control-label">
+      <%= f.label :description, 'Description' %>
+    </div>
+    <div class="col-sm-4">
+        <%=f.text_area :description, :placeholder => "Max length 150 characters", :maxlength =>150 , :class=> 'form-control'%>
+    </div>
+  </div>
+  <%= f.file_field :attachment %>
+
+
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-xs-6">
+      <%= f.submit class: 'btn btn-primary' %>
+      <%= link_to 'Cancel', cancel_link, :class => 'btn btn-default' %>
+    </div>
+  </div>
+<% end %>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".select-grade").select2({
+    placeholder: "Select Grade Level"
+  });
+});
+</script>

@@ -1,0 +1,19 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+  <div>
+    <p>Hello <%=@username%>,</p>
+    <p>Please <a href="<%=@msg%>">click here</a> to view the weekly progress report for <%=@device_name%>.</p>
+    <p>
+      Best,
+      <br/>
+      The Cogli Team
+      <br/>
+      Cogliapp.com
+    </p>
+    <%= link_to 'Click here to be removed from the mailing list', @unsubscribe_url %>
+  </div>
+</body>

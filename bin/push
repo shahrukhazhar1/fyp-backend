@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ -z "${TAG}" ]
+then
+  TAG='latest'
+fi
+
+docker tag cogli-parent-portal:latest gcr.io/level-amphora-174304/cogli-parent-portal:$TAG
+gcloud docker -- push gcr.io/level-amphora-174304/cogli-parent-portal:$TAG

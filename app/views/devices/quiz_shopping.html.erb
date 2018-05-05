@@ -1,0 +1,272 @@
+<ol class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li>
+    <a href="/devices/<%=@device.id%>"><%=@device.name%></a>
+  </li>
+  <li class="active">
+    Quiz Shopping
+  </li>
+</ol>
+
+  <% tutorial_step = Tutorial.find_by_page_name "step_5" %>
+  <% @tutorial = UserTutorial.where(user_id: current_user.id, tutorial_id: tutorial_step.id).first %>
+
+  <%= form_tag({url: quiz_shopping_device_path(@device)}, {method: :get, :class => 'quiz-shopping-form'}) do |f| %>
+    <div class="quiz-query-bar">
+      <div class="row">
+        <div class="col-xs-12 col-md-9">
+          <%= search_field_tag "q", params[:q],class: "form-control" %>
+          <div class="col-xs-12 col-md-3">
+            <%= select_tag "subject", options_for_select(@all_subjects, params[:subject]), prompt:"Select Subject", class: "selectpicker" %>
+          </div>
+          <div class="col-xs-12 col-md-9 row-margin">
+            <div class="form-group">
+              <label for="sort-by" class="col-xs-12 col-sm-2 control-label sort-by-control">Sort By</label>
+              <div class="col-xs-12 col-sm-4">
+                <%= select_tag "sort_by", options_for_select(Quiz::SORT_BY,params[:sort_by]), include_blank: true, class: "selectpicker" %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% if @tutorial.present? && !@tutorial.seen? %>
+          <div class="col-xs-12 col-md-3 device-msg">
+            <div class="arrow_rightTop shop-search-tutorial" id="shop-search-box">
+              <p>You can <b>enter a keyword</b> and <b>search for quizzes</b> by clicking here. For example, you can search for <b>Math.</b></p>
+              <button class="btn btn-sm btn-primary" id="show-shop-tutorial-search">Next</button>
+              <span class="ripple"></span>
+            </div>
+            <%= button_tag "Search", class: "btn btn-block btn-primary-dark custom-filter shopping-animation", id: 'shop-anim' %>
+          </div>
+        <% else %>
+          <div class="col-xs-12 col-md-3">
+            <%= button_tag "Search", class: "btn btn-block btn-primary-dark custom-filter", id: 'shop-anim' %>
+          </div>
+        <% end %>
+        <div class="col-xs-12 col-md-3" style="margin-top: 15px;">
+          <%= select_tag "view_count", options_for_select([["View 20", 20], ["View 50", 50], ["View 100", 100]],params[:view_count]), class: "selectpicker view-shopping", id: "view-count" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="device-query-shopping-bottom">
+      <div class="col-xs-12 col-md-3 pull-right filter-container">
+        <div class="col-xs-12 filter-bar">
+          <div class="col-xs-12 custom-filter-bar">
+            <h2 class="cf-bar-item">Test Prep</h2>
+            <% @test_preps.each do |subject| %>
+              <div class="custom-checkbox-2">
+                <%= label_tag "test_prep_#{subject.parameterize.underscore}", subject %>
+                <%= check_box_tag 'test_preps[]', subject, params[:test_preps] && params[:test_preps].include?(subject.to_s) ? true : false, id: "test_prep_#{subject.parameterize.underscore}"  %>
+              </div>
+            <% end %>
+
+            <div class="cf-button-container">
+              <% if @test_preps.present? %>
+                <%= button_tag "Filter", class: "btn custom-filter" %>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="col-xs-12 custom-filter-bar">
+            <% if current_user.present? && @tutorial.present? && !@tutorial.seen? %>
+              <div class="arrow_bottomRight subject-search-tutorial hidden" id="shop-tutorial-2">
+                <p>You can <b>check these boxes</b> to refine your search by filtering for specific quizzes. For example, checking <b>Math</b> and <b>Reading</b> will <b>only show Math and Reading quizzes.</b></p>
+                <button class="btn btn-sm btn-primary" id="show-shop-tutorial-3">Next</button>
+                <span class="ripple"></span>
+              </div>
+            <% end %>
+            <h2 class="cf-bar-item device-msg">Subject</h2>
+
+            <% @subjects.each do |subject| %>
+              <div class="custom-checkbox-2">
+                <%= label_tag "subject_#{subject[1]}",subject[0] %>
+                <%= check_box_tag 'subject_ids[]', subject[1], params[:subject_ids] && params[:subject_ids].include?(subject[1].to_s) ? true : false, id: "subject_#{subject[1]}"  %>
+              </div>
+            <% end %>
+            <% if @subjects.present? %>
+              <div class="cf-button-container">
+                <%= button_tag "Filter", class: "btn custom-filter" %>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="col-xs-12 custom-filter-bar">
+            <h2 class="cf-bar-item">Grade</h2>
+            <% @grades.each do |grade| %>
+              <div class="custom-checkbox-2">
+                <%= label_tag "grade_#{grade.id}",grade.name %>
+                <%= check_box_tag 'grade_ids[]', grade.id, params[:grade_ids] && params[:grade_ids].include?(grade.id.to_s) ? true : false, id: "grade_#{grade.id}" %>
+              </div>
+            <% end %>
+            <% if @grades.present? %>
+              <div class="cf-button-container">
+                <%= button_tag "Filter", class: "btn custom-filter" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <div class="device-query-shopping-bottom">
+    <div class="col-xs-12 col-md-9 quiz-results">
+      <h2>Quiz Search Results</h2>
+      <div class="col-xs-12 qs-results">
+        <div class="qs-header">
+          <% ["Quiz Name", "Subject", "Test Prep", "Topic"].each do |name| %>
+            <%# if name == "Grade" && @tutorial.present? && !@tutorial.seen? %>
+            <span class="qs-header-item device-msg"><%= name %></span>
+            <div class="arrow_bottomLeft tutorial-popup grade-search-tutorial hidden" id="shop-tutorial-1">
+              <p>Hint 1: “Here are your search results, you can select Any of these arrows to sort your result. Click on description to view a description of the quiz. Click on “?” to view a sample question for that Quiz.”</p>
+              <button class="btn btn-primary" id="show-shop-tutorial-2">Next</button>
+            </div>
+            <%#else%>
+            <!-- <span class="qs-header-item"><%= name %></span> -->
+            <%#end%>
+          <% end %>
+        </div>
+
+        <% if @quizzes.empty? %>
+          <div class="qs-row">
+            <h3 class="qs-quiz-name qs-item">No quizzes found. Try expanding your search.</h3>
+          </div>
+        <% end %>
+
+        <% @quizzes.each_with_index do |quiz,index| %>
+          <div class="qs-row">
+            <% test_prep = quiz.test_prep == 'Not Applicable' ? '' : quiz.test_prep %>
+            <% removal = @device.quizzes.find_by(id: quiz.id).present? ? true : false %>
+            <div class="qs-col-left">
+              <h3 class="qs-quiz-name qs-item"><%= quiz.name %></h3>
+              <span class="qs-item">
+                <span class="qs-item-field"> Subject: </span>
+                <%= quiz.subject %>
+              </span>
+              <span class="qs-item">
+                <span class="qs-item-field"> Status: </span>
+                <%= quiz_status_tag @device.id,quiz.id %>
+              </span>
+              <span class="qs-item" >
+                <span class="qs-item-field"> Test Prep: </span>
+                <%= test_prep %>
+              </span>
+              <span class="qs-item">
+                <span class="qs-item-field"> Topic: </span>
+                <%= quiz.topic %>
+              </span>
+              <span class="qs-item">
+                <span class="qs-item-field"> Grades: </span>
+                <%= quiz.grades.map(&:name).join(", ") %>
+              </span>
+            </div>
+            <div class="qs-col-right">
+              <span class="qs-item">
+                <span class="show-cursor" data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="<%= quiz.description.blank? ? 'No Description' : quiz.description %>">
+                  View Description 
+                  <span class="glyphicon glyphicon-info-sign text-primary" aria-hidden="true"></span>
+                </span>
+              </span>
+              <span class="qs-item">
+                <% quiz_question = quiz.questions.where(sample: true).first %>
+                <% quiz_question = quiz_question.nil? ? quiz.questions.first : quiz_question %>
+                <% if quiz_question.present? && quiz_question.latex %>
+                  <% latex_element_id = "question_sample_text_#{quiz_question.id}" %>
+                  <span id="<%= latex_element_id %>" class="hidden"><%= quiz_question.text %></span>
+                  <span class="show-cursor" data-html="true" data-container="body" data-content-wrapper="#<%= latex_element_id %>" data- data-trigger="hover" data-toggle="popover" data-placement="top">
+                  <% else %>
+                    <span class="show-cursor" data-html="true" data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="<%= quiz_question.try(:text).present? ? quiz_question.text : "No Example Question" %>">
+                    <% end %>
+                    View Sample Question
+                    <span class="glyphicon glyphicon-question-sign text-primary" aria-hidden="true"></span>
+                  </span>
+                </span>
+                <span id='<%= "d_#{@device.id}_q_#{quiz.id}_selection"%>' class="device-msg">
+                  <%= link_to removal.present? ? "Remove" : "Add", device_quiz_selection_path(device_id: @device.id,quiz_id: quiz.id, removal: removal),remote: true, class: "qs-item btn btn-lg btn-primary" %>
+                </span>
+                <%if index ==0 %>
+                  <div class="arrow_leftTop tutorial-popup quiz-add-remove-tutorial hidden" id="shop-tutorial-3">
+                    <p>Click here to <b>add or remove a quiz</b> from your quiz queue. <b>Please add at least one quiz</b> to your queue in order to proceed.</p>
+                    <button class="btn btn-sm btn-primary" id="show-last-shop-tutorial">Next</button>
+                    <span class="ripple"></span>
+                  </div>
+                <%end%>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="col-xs-12">
+          <%= paginate @quizzes if @quizzes.present? %>
+        </div>
+        <div class="col-xs-12">
+          <div class="qs-queue-link">
+            <%= link_to "Quiz Queue", quiz_queue_device_path(@device), class: "btn btn-lg btn-primary-dark queue-btn", id: 'quiz-q1',data:{"tutorial-id": "#{@tutorial.id}", "user-id": "#{current_user.id}",  "device-id": "#{@device.id}"} %>
+            <%if current_user.present? && @tutorial.present? && !@tutorial.seen? %>
+              <div><span id="quiz-shop-ripple" class="ripple1 hidden" style="position:static;left: 235px;"></span></div>
+              <div class="arrow_rightTop tutorial-popup quiz-shop-hint4 hidden" id="last-shop-tutorial">
+                <p>Once you’ve added at least one quiz, <b>click "Quiz Queue"</b> to proceed.</p>
+                <button class="btn btn-sm btn-primary" id="close-shop-tutorial" tutorial-id="<%=@tutorial.id%>" user-id="<%=current_user.id%>" device-id="<%=@device.id%>">Ok</button>
+                <span class="ripple"></span>
+              </div>
+
+              <div class="arrow_rightTop tutorial-popup quiz-add-warning hidden" id="last-shop-tutorial-1">
+                <p><b>Please add a quiz in order to proceed.</b></p>
+                <button class="btn btn-primary" id="close-shop-tutorial-1" tutorial-id="<%=@tutorial.id%>" user-id="<%=current_user.id%>" device-id="<%=@device.id%>">Ok</button>
+              </div>
+            <%end%>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+  $(function () {
+    $.ajax({
+      type: 'POST',
+      url: '/user_settings/check_tutorial',
+      dataType: 'script',
+      data: {
+        step: 'step_5'
+      },
+      success: function(data, textStatus, jqXHR)
+      {
+        if (data == "true") {
+          $("#shop-search-box").addClass("hidden");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {}
+    });
+    $(".view-shopping").change(function(){
+      $(".quiz-shopping-form").submit();
+    });
+
+    var delimiters = [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\[", right: "\\]", display: true},
+      {left: "\\(", right: "\\)", display: false}
+    ]
+
+    $("[data-toggle='popover']").popover({
+      container: 'body',
+      html: 'true',
+      trigger: 'hover',
+      content: function(){
+        var x = $(this).data('content-wrapper');
+        if (x) {
+          try {
+            var frag = renderMathInElement.renderMathInText($(x).text(), delimiters);
+            return $('<span>').append(frag).html();
+          } catch (e) {
+            return '<span class="error">Sorry, we are currently unable to render the question on the website.</span>';
+          }
+        } else {
+          return $(this).data('data-content')
+        }
+      }
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>

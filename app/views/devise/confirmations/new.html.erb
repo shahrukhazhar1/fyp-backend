@@ -1,0 +1,52 @@
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: 'form-layout' }) do |f| %>
+
+<div class="user-account-cont">
+<div class="header-home">
+		<div class="container">
+			<a class="logo" href="/">Cogli</a>
+		</div> 
+	</div>
+	
+	<div class="container">
+		<div class="row fadeInUp">
+		
+		<div class="col-md-6">
+			
+				<div class="welcome-cogli-text">
+                	<p>
+                        <span>Welcome</span> 
+                        to the Cogli Parent Portal!<br>
+                        Here You Can...
+                    </p>
+                    <ul>
+                    	<li>Activate or Deactivate the App</li>
+                        <li>Choose Quizzes for Your Child’s Phone</li>
+                        <li>Monitor Activity and Learning Milestones</li>
+                    </ul>
+                </div>
+			
+			</div>
+			
+			<div class="col-md-5 pull-right">
+				<div class="sign-up-cont">
+					<h1>Haven't received confirmation email yet?</h1>
+
+  <%= devise_error_messages! %>
+  
+  <div class="form-group">
+    <%= f.email_field :email, autofocus: true, class: 'form-control', placeholder: 'Email Address', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+  </div>
+  
+<div class="form-group">
+  <%= f.submit "Resend confirmation instructions", :class => " btn-block" %>
+<% end %>
+</div>
+
+<%= render "devise/shared/links" %>
+			</div>
+			</div>
+
+
+</div>
+</div>
+</div>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <meta content='IE=Edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+    <title>Cogli</title>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.tablednd/0.8/jquery.tablednd.0.8.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <% if current_user %>
+      <header>
+        <nav class="navbar navbar-default navbar-fixed-top" data-spy="affix" data-offset-top="100">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="logo" href="/">Cogli</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+              <% if (defined? @device) && (!@device.nil?) && (@device.is_a? Device) && (!@device.id.nil?) %>
+                <% if (defined? quiz_shopping_device_path) %>
+                  <ul class="nav navbar-nav">
+                    <li>
+                      <%= link_to device_path(@device), {class: "device-navbar-item"} do %>
+                        Progress <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to quiz_shopping_device_path(@device), {class: "device-navbar-item"} do %>
+                        Find Quizzes <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to quiz_queue_device_path(@device), {class: "device-navbar-item"} do %>
+                        Quiz Queue <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                      <% end %>
+                    </li>
+                </ul>
+              <% end %>
+            <% end %>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown"><a href=""  class="dropdown-toggle device-menu-btn" data-toggle="dropdown">Devices</a>
+                  <ul class="dropdown-menu device-add ">
+                    <% current_user.devices.each do |device| %>
+                      <li><%= link_to device.name, "/devices/#{device.id}" %></li>
+                    <% end %>
+                    <li><%= link_to '/devices/new' do %>
+                      Add New Device <i class="glyphicon glyphicon-plus" aria-hidden="true"></i> 
+                    <% end %>
+                  </li>
+                  </ul>
+                </li>
+
+
+                <li class="dropdown user-info">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <%= current_user.username %>
+                    <i class="fa fa-caret-down"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><%= link_to 'Account', main_app.account_path %></li>
+                    <% if current_user.devices.present? %>
+                      <li> <%= link_to 'Devices', '/devices' %></li>
+                    <%end%>
+                    <% if current_device && !current_device.new_record? %>
+                      <li>
+                        <%= link_to 'Plans', koudoku.owner_subscriptions_path(current_device) %>
+                      </li>
+                    <% end %>
+                    <li role="separator" class="divider"></li>
+                    <li><%= link_to 'Home', 'https://cogliapp.com/#intro' %></li>
+                    <li><%= link_to 'FAQ', 'https://cogliapp.com/#faq' %></li>
+                    <li>
+                      <%= link_to 'https://play.google.com/store/apps/details?id=com.cogli.alesia' do %>
+                        Download
+                        <i class="fa fa-android android-green" aria-hidden="true"></i>
+                      <% end %>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li><%= link_to 'Logout', main_app.destroy_user_session_path, :method => :delete %></li>
+                  </ul>
+                </li>
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+      </header>
+    <% end %>
+    <%#= breadcrumbs :style => :bootstrap %>
+    <% if current_user %>
+      <div class="main-wrapper">
+        <div class="container cont-logo">
+          <%= render 'layouts/flash_messages' %>
+          <%= yield %>
+        </div>
+      </div>
+    <% else %>
+      <%= render 'layouts/flash_messages' %>
+      <%= yield %>
+    <% end %>
+    <!--footer-->
+    <footer class="footer">
+      <p class="copyright-txt">
+        <span style="display: inline-block;">
+        © <%= Time.new.year %> Cogli. All rights reserved.
+        </span>
+        &nbsp;
+        <span style="display: inline-block;">
+        <a href="/privacy_policy_tos">Terms of Service</a>
+        </span>
+        &nbsp;
+        <span style="display: inline-block;">
+        <a href="/privacy_policy_tos">Privacy Policy</a>
+        </span>
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<div class="main-content billing-detail">
+  <h1>Billing Details</h1>
+     <div class="row">
+      <div class="col-md-6">
+          <div class="table-responsive">
+                 <table class="table table-bordered">
+                    <thead>
+                       <tr>
+                         <td class="">Devices</td>
+                         <td class="">Next Auto Renew Date</td>
+                         <td class="">Pricing Guarantee</td>
+                       </tr>
+                     </thead>
+                    <% @devices.each do |device| %>
+                       <tr>
+                         <td class=""><a href=""><%= device.name %></a></td>
+                         <% if device.subscription && device.subscription.billings && device.subscription.billings.size > 0 %>
+                           <% if device.subscription.plan %>
+                             <td class="">Your price is guaranteed to remain at $<%= device.subscription.plan.price %>/<%= device.subscription.plan.interval %>   through at least <%= device.subscription.billings.last.end_date.to_date %> so long as you don’t miss a renew payment prior to <%= device.subscription.billings.last.end_date.to_date %>
+                             </td>
+                             <td class=""><%= device.subscription.billings.last.end_date.to_date %></td>
+                           <% else %>
+                             <td class="">(None)</td>
+                             <td class="">(None)</td>
+                           <% end %>
+                         <% else %>
+                           <td>No Subscription</td>
+                           <td>None</td>
+                         <% end %>
+                       </tr>
+                    <% end %>
+                 </table>
+             </div>
+         </div>
+     </div>
+
+     <div class="row">
+      <div class="col-md-12">
+             <div class="scrollbar">
+                 <div class="table-responsive">
+                     <table class="table table-bordered">
+                         <thead>
+                           <tr>
+                             <td class="">Date</td>
+                             <td class="">Device</td>
+                             <td class="">Billing Period</td>
+                             <td class="">Payment Method</td>
+                             <td class="">Subtotal</td>
+                             <td class="">Total</td>
+                             <td class="">Cancel</td>
+                           </tr>
+                         </thead>
+                          <% @billings.each do |billing| %>
+                            <tr>
+                             <td class=""><%= billing.subscription.updated_at.to_date %></td>
+                             <td class=""><%= billing.subscription.device.name %></td>
+                             <td class=""><%= billing.start_date.to_date %> to <%= billing.end_date.to_date %></td>
+                             <td class=""><%= billing.subscription.card_type %> **** **** **** <%= billing.subscription.last_four %></td>
+                             <td class=""><%= billing.price %></td>
+                             <td class=""><%= billing.price %></td>
+                             <% sub = Stripe::Subscription.retrieve(billing.subscription.stripe_id) %>
+                             <% if sub.canceled_at.blank? %>
+                                <td class="">
+                                  <%= link_to 'Cancel', koudoku.cancel_owner_subscription_path(billing.subscription.device_id, billing.subscription_id), :method => :post %></td>
+                              <%else%>
+                                <td class="">Already Canceled</td>
+                              <%end%>
+                            </tr>
+                          <% end %>
+                     </table>
+                 </div>
+             </div>
+
+
+         </div>
+     </div>
+
+ </div>

@@ -1,0 +1,34 @@
+<div class="row ">
+  <div class="col-md-9">
+    <div class="quiz-cont fadeInUp">
+      <%if @quiz_results.blank? %>
+        <h1>No quizz added yet</h1>
+      <%else%>
+        <h1>Recently Added Quizzes</h1>
+        <% @quiz_results.each do |quiz_result| %>
+          <div class="quiz-row">
+            <div class="top-bar clearfix">
+              <span class="time"><%= quiz_result.created_at.to_formatted_s(:minutes_and_seconds) %></span>
+              <span class="date"><%= quiz_result.created_at.to_date %></span>
+            </div>
+            <a href="" class="quiz"><span>Q.</span> <%= quiz_result.name %></a>
+            <div class="bottom-bar clearfix">
+              <span class="device">Status: <%= quiz_result.quiz_status %></span>
+            </div>
+          </div>
+        <% end %>
+      <%end%>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="manage-devices">
+      <!-- <h2>Manage Devices</h2> -->
+      <ul>
+        <li><%= link_to 'View Unfinished Quizzes', unfinished_quizzes_cogli_admin_index_path, :class => 'btn btn-default'  %></li>
+        <li><%= link_to 'View Submitted Quizzes', submitted_quizzes_cogli_admin_index_path, :class => 'btn btn-default'  %></li>
+        <li><%= link_to 'Approved Quizzes', approved_quizzes_cogli_admin_index_path, :class => 'btn btn-default'  %></li>
+      </ul>
+    </div>
+  </div>
+</div>

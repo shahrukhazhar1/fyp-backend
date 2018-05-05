@@ -1,0 +1,109 @@
+<div class="row" id="home-account">
+  <div class="col-xs-12 col-md-6">
+    <div class="devices-cont">
+      <h2>Devices</h2>
+      <% @devices.each do |device| %>
+        <div class="device-status-row with-hover">
+          <p>
+            <%= link_to device.name, device_path(device), class: "device-link" %>
+          </p>
+          <%= form_for device, :remote => true do |f| %>
+            <p class="switch-label">
+              Weekly Progress Report:
+              <%= check_box_tag :switch, device.send_mail, device.send_mail, :id => device.id, :'data-toggle' => 'switch', :class => 'ct-blue device-switch device-switch-send-mail' %>
+              <%= f.hidden_field :send_mail %>
+            </p>
+          <% end %>
+          <p>
+            Subscription:
+            <% if not device.subscription.nil? %>
+              <% if device.subscription.canceled? %>
+                <%= link_to koudoku.owner_subscriptions_path(device.id) do %>
+                  Cancels On
+                  <%= device.subscription.current_period_end.strftime("%Y-%m-%d") %>
+                  <%= device.subscription.plan.name %>
+                <% end %>
+              <% else %>
+                <%= link_to koudoku.owner_subscription_path(device.id, device.subscription.id) do %>
+                  Renews On
+                  <%= device.subscription.current_period_end.strftime("%Y-%m-%d") %>
+                  <%= device.subscription.plan.name %>
+                <% end %>
+              <% end %>
+            <% else %>
+              <%= link_to "(None)", koudoku.owner_subscriptions_path(device.id) %>
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+      <%= link_to "Add a New Device", new_device_path, class: 'btn btn-lg btn-block btn-primary-dark' %>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-md-6">
+    <div class="account-management-cont">
+      <h2>Account Management</h2>
+      <%= form_for(current_user, as: :user, url: user_setting_path(current_user), html: { method: :put }) do |f| %>
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label>First Name:</label>
+              <%= f.text_field :first_name, class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label>Last Name:</label>
+              <%= f.text_field :last_name, class: 'form-control' %>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-6 col-md-offset-6">
+            <div class="form-group">
+              <%= f.submit 'Update', :class => "btn btn-lg btn-block btn-default", :id=>"unique-updt-btn" %>
+            </div>
+          </div>
+        </div>
+      <%end%>
+      <%= form_for(current_user, as: :user, url: registration_path(:user), html: { method: :put }) do |f| %>
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label>New Password:</label>
+              <%= f.password_field :password, autocomplete: "off", class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label>New Password Confirmation:</label>
+              <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control' %>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-offset-6 col-md-6">
+            <div class="form-group">
+              <label>Current Password:</label>
+              <%= f.password_field :current_password, autocomplete: "off", class: 'form-control', required: true %>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-6 col-md-offset-6">
+            <div class="form-group">
+              <%= f.submit 'Update', :class => "btn btn-lg btn-block btn-default", :id=>"unique-updt-btn" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <% device = @devices.first %>
+      <% if device.try(:subscription).present? %>
+        <%= link_to 'Update Payment Method', koudoku.edit_owner_subscription_path(device, device.subscription, update: 'card'), class: 'bottom-link' %>
+      <% end %>
+      <%= link_to 'Terms of Service', privacy_policy_tos_path, :class => 'bottom-link' %>
+      <%= link_to 'Privacy Policy', privacy_policy_tos_path, :class => 'bottom-link' %>
+    </div>
+  </div>
+</div>

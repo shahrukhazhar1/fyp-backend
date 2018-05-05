@@ -1,0 +1,30 @@
+<div class="main-content" id="devices-show">
+  <div class="progress-device">
+  <h1>Hello Test User,</h1>
+  <h3>Please enjoy your weekly progress report</h3>
+    <div class="row">
+      <div class="col-md-8">
+
+        <form class="form-horizontal">
+          <div class="form-group">
+          <label for="" class="col-sm-2 control-label">Chart Name</label>
+           <div class="col-sm-4">
+            <select id="progress-chart-type" class="selectpicker">
+              <option value="0">Quiz Activity</option>
+              <option value="1">Milestones</option>
+            </select>
+           </div>
+
+          </div>
+        </form>
+
+
+        <div id="quiz-activity-chart" data-chart-stats="<%= @quiz_results_stats.to_s %>" style="height: 300px;"></div>
+        <div id="milestones-chart" data-chart-stats="<%= @quiz_results_stats_bar.to_s %>" style="height: 300px;"></div>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>

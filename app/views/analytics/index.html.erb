@@ -1,0 +1,79 @@
+<div class=row>
+  <div class=col-md-3>
+    <div>
+      <div class="widget bg-white">
+        <div class="widget-icon bg-blue pull-left fa fa-mobile-phone"> </div>
+        <div class=overflow-hidden> <span class=widget-title><%= @total_devices %></span><span class=widget-subtitle>Total Devices</span> </div>
+      </div>
+      <div class="widget bg-white">
+        <div class="widget-icon bg-success pull-left fa fa-mobile-phone"> </div>
+        <div class=overflow-hidden> <span class="widget-title"><%= @active_devices %></span> <span class=widget-subtitle>Active Devices</span> </div>
+      </div>
+      <div class="widget bg-white">
+        <div class="widget-icon bg-danger pull-left fa fa-graduation-cap"> </div>
+        <div class=overflow-hidden> <span class=widget-title><%= @avg_quizzes_per_device %></span> <span class=widget-subtitle>Avg Quizzes per deivce</span> </div>
+      </div>
+    </div>
+  </div>
+  <div class=col-md-5>
+    <div class="widget-chart bg-white">
+      <div class=row>
+        <div class=col-xs-12>
+          <small class=text-uppercase>Questions answered per device</small>
+          <h4 class="no-margin bold text-success"><%= @questions_answered_per_device.values.sum %></h4>
+        </div>
+      </div>
+      <div class="canvas-holder mt5 mb5">
+        <div class="flot-pie chart-sm" data-analytics="<%= @devices_of_question_answered.map {|d| {label: d.name, data: (@questions_answered_per_device[d.id].to_f/@questions_answered_per_device.values.sum.to_f) * 100} }.to_json %>" style=height:171px></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="widget bg-white">
+      <div class="text-uppercase">Total Quizzes</div>
+      <h1 class="text-info mt0 mb0 bold"><%= @total_quizzes %></h1>
+      <small class=pt5>Total number of quizzes either created or reused in multiple devices</small>
+    </div>
+    <div class="widget bg-white">
+      <div class="row">
+        <div class="col-xs-4">
+          <h6> Correct Answer % </h6>
+          <h1 class="mt0 mb0 bold"> <%= @avg_correct_answer_percentage %> </h1>
+          <small class="mb0"> Avg % correctness </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class=row>
+  <div class=col-md-6>
+    <div class="widget bg-white">
+      <div class="widget-details widget-list">
+        <div class=mb20>
+          <h4 class="no-margin text-uppercase">Total correct questions</h4>
+          <small class=text-uppercase>From start till today</small>
+        </div>
+        <% @devices_of_correct_questions.each_with_index do |device, i| %>
+          <a href=javascript:; class=widget-list-item>
+            <span class="label label-<%= %w[info success][i%2] %> pull-right"><%= @total_correct_questions_per_device[device.id] %></span> <%= device.name %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class=col-md-6>
+    <div class="widget bg-white">
+      <div class="widget-details widget-list">
+        <div class=mb20>
+          <h4 class="no-margin text-uppercase">Total wrong questions</h4>
+          <small class=text-uppercase>From start till today</small>
+        </div>
+        <% @devices_of_wrong_questions.each_with_index do |device, i| %>
+          <a href=javascript:; class=widget-list-item>
+            <span class="label label-<%= %w[warning danger][i%2] %> pull-right"><%= @total_wrong_questions_per_device[device.id] %></span> <%= device.name %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
