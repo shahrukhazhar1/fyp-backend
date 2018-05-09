@@ -30,10 +30,11 @@ class Api::V1::DevicesController < Api::V1::ApiController
 
   def subscription_date
     @device = Device.find_by_id params[:id]
-    if @device.present? && @device.subscription.present?
+    if @device.present? && @device.device_id == params[:device_id]
       fresh_when @device
     else
-      render head: 404
+      render json: {status: 500, error: "Subscription not found for this device" }
+      # head :unprocessable_entity
     end
   end
 

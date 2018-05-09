@@ -12,13 +12,11 @@ class UserSettingsController < ApplicationController
   end
 
   def check_tutorial
-    return render json: true
-    
-    # if current_user.tutorial_seen.blank? && current_user.tutorial_screen == params[:step]
-    #   return render json: false
-    # else
-    #   return render json: true
-    # end
+    if current_user.tutorial_seen.blank? && current_user.tutorial_screen == params[:step]
+      return render json: false
+    else
+      return render json: true
+    end
   end
 
   def update

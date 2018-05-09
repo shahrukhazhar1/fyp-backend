@@ -3,7 +3,7 @@
 # Table name: grades
 #
 #  id         :integer          not null, primary key
-#  name       :string(255)
+#  name       :string
 #  priority   :integer
 #  created_at :datetime
 #  updated_at :datetime

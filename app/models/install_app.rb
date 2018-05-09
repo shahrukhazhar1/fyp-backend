@@ -8,8 +8,7 @@
 #  device_id    :integer
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  block_status :boolean          default(FALSE)
-#  device_udid  :string
+#  block_status :boolean          default(TRUE)
 #
 
 class InstallApp < ActiveRecord::Base

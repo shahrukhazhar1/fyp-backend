@@ -4,8 +4,8 @@
 #
 #  id           :integer          not null, primary key
 #  device_id    :integer
-#  name         :string(255)
-#  phone_number :string(255)
+#  name         :string
+#  phone_number :string
 #  created_at   :datetime
 #  updated_at   :datetime
 #

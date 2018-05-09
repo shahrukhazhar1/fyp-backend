@@ -15,8 +15,7 @@ class DevicesController < ApplicationController
     :update,
     :quiz_shopping,
     :quiz_queue,
-    :destroy,
-    :quiz_results
+    :destroy
   ]
 
   before_action :set_session_cookie_if_token_authenticated!, only: [
@@ -35,21 +34,21 @@ class DevicesController < ApplicationController
     end
   end
 
-  # if Cogli.force_tutorial?
-  #   before_action :verify_tutorial, except: [:update]
-  # end
+  if Cogli.force_tutorial?
+    before_action :verify_tutorial, except: [:update]
+  end
 
-  # def verify_tutorial
-  #   if action_name == 'show'
-  #     redirect_tutorial_for!("step_6")
-  #   elsif action_name == 'quiz_shopping'
-  #     redirect_tutorial_for!("step_5")
-  #   elsif action_name == 'quiz_queue'
-  #     redirect_tutorial_for!("step_4")
-  #   else
-  #     redirect_tutorial_for!(nil)
-  #   end
-  # end
+  def verify_tutorial
+    if action_name == 'show'
+      redirect_tutorial_for!("step_6")
+    elsif action_name == 'quiz_shopping'
+      redirect_tutorial_for!("step_5")
+    elsif action_name == 'quiz_queue'
+      redirect_tutorial_for!("step_4")
+    else
+      redirect_tutorial_for!(nil)
+    end
+  end
 
   def index
     @devices = current_user.devices.order('created_at DESC')
@@ -219,10 +218,6 @@ class DevicesController < ApplicationController
       @quizzes = @quizzes.order("#{order_by}").page(params[:page]).per(params[:view_count])
     end
     @quizzes ||=[]
-  end
-
-  def quiz_results
-    @quiz_results = @device.quiz_results
   end
 
   def quiz_queue

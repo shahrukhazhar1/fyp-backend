@@ -3,10 +3,10 @@
 # Table name: plans
 #
 #  id            :integer          not null, primary key
-#  name          :string(255)
-#  stripe_id     :string(255)
+#  name          :string
+#  stripe_id     :string
 #  price         :float
-#  interval      :string(255)
+#  interval      :string
 #  features      :text
 #  highlight     :boolean
 #  display_order :integer

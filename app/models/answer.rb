@@ -9,7 +9,7 @@
 #  created_at  :datetime
 #  updated_at  :datetime
 #  latex       :boolean          default(FALSE)
-#  attachment  :string(255)
+#  attachment  :string
 #
 # Indexes
 #

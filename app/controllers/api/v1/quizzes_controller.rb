@@ -67,7 +67,7 @@ class Api::V1::QuizzesController < ApplicationController
   end
 
   def get_grades
-    render :status => 200, :json => { success: true, grades: Grade.all, courses: Course.all }
+    render :status => 200, :json => { success: true, grades: Grade.all }
   end
 
   def new_verison
@@ -197,8 +197,9 @@ class Api::V1::QuizzesController < ApplicationController
     @quiz = Quiz.new(quiz_params)
     @quiz.quiz_user_id = quiz_user.id
     if @quiz.save
-      QuizSelection.quiz_selection(quiz_user.id, @quiz.id)
-      
+
+      update_pdf_preview(@quiz,params[:quiz])
+
       if params[:grade_all]
         s = params[:grade_all].count - 1
         for i in 0..s
@@ -242,6 +243,8 @@ class Api::V1::QuizzesController < ApplicationController
 
     if @quiz.update(quiz_params)
 
+      update_pdf_preview(@quiz,params[:quiz])
+
       if @current_quiz_user.present? && @quiz.quiz_status == 'rejected'
         @quiz.quiz_status = 'incomplete'
         @quiz.save
@@ -269,14 +272,14 @@ class Api::V1::QuizzesController < ApplicationController
   def show
     user = @current_quiz_user
     @questions = @quiz.questions
-    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all, labels: Label.all }
+    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all }
   end
 
   def edit
     # user = @current_quiz_user
     
     @questions = @quiz.questions
-    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all, labels: Label.all }
+    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all }
   end
 
   # def update_row_order
@@ -306,11 +309,6 @@ class Api::V1::QuizzesController < ApplicationController
     else
       render status: 404, json: { success: false, quiz: @quiz, questions: @questions, grades: Grade.all }
     end
-  end
-
-  def quiz_results
-    render status: 200, json: { success: true, quiz_results: @current_quiz_user.quiz_results }
-
   end
 
   def reject

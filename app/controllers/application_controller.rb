@@ -53,17 +53,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def verify_api_req
-    user_token = request.headers["HTTP_X_USER_TOKEN"]
-    user = user_token && Authentication.find_by_auth_token(user_token.to_s)
-    if user && user.quiz_user.present?
-      @current_quiz_api_user = user.quiz_user
-      true
-    else
-      render :status => 401, :json => { :success => false, :info => "You need to sign in before continuing" }
-    end
-  end
-
   def authenticate_quiz_user_from_token!
     user_token = params[:auth_token]
     user = user_token && Authentication.find_by_auth_token(user_token.to_s)

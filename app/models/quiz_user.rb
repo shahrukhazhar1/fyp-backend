@@ -3,9 +3,9 @@
 # Table name: quiz_users
 #
 #  id                     :integer          not null, primary key
-#  email                  :string(255)      default(""), not null
-#  encrypted_password     :string(255)      default(""), not null
-#  reset_password_token   :string(255)
+#  email                  :string           default(""), not null
+#  encrypted_password     :string           default(""), not null
+#  reset_password_token   :string
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
 #  sign_in_count          :integer          default(0), not null
@@ -13,12 +13,12 @@
 #  last_sign_in_at        :datetime
 #  current_sign_in_ip     :inet
 #  last_sign_in_ip        :inet
-#  confirmation_token     :string(255)
+#  confirmation_token     :string
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  authentication_token   :string(255)
+#  authentication_token   :string
 #  email_alert            :boolean          default(FALSE)
 #
 # Indexes
@@ -36,12 +36,6 @@ class QuizUser < ActiveRecord::Base
   has_many :quizzes
   has_many :authentications, dependent: :destroy
   has_many :comments, dependent: :destroy
-
-  has_many :quiz_selections
-  has_many :quizzes, :through => :quiz_selections
-
-  has_many :quiz_results
-  
   
   def ensure_authentication_token
     auth_token = generate_authentication_token
@@ -49,17 +43,6 @@ class QuizUser < ActiveRecord::Base
     self.save!
     auth_token
   end
-  
-  def as_json(options={})
-    self.reload
-    {
-      :id  =>  self.id,
-      :email    => self.email,
-      :created_at =>  self.created_at,
-      :updated_at =>  self.updated_at
-    }
-  end
-
   private
   
   def generate_authentication_token

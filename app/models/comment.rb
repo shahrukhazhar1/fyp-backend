@@ -9,7 +9,7 @@
 #  created_at    :datetime
 #  updated_at    :datetime
 #  text          :text
-#  posted_by     :string(255)
+#  posted_by     :string
 #  question_id   :integer
 #
 # Indexes

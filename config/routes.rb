@@ -10,17 +10,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      namespace :mobile do
-        resources :quiz_results, :only => [:create]
-        resources :courses
-        resources :quizzes do
-          collection do
-            get :api_quiz_results
-          end
-        end
-      end
-      resources :courses
-      resources :labels
 
       resources :mailing_list, only: [] do
         member do
@@ -32,6 +21,7 @@ Rails.application.routes.draw do
         member do
           get :installed_apps
         end
+        resources :quiz_results, :only => [:create]
       end
 
       post 'devices/update_fcm_token', to: 'devices#update_fcm_token'
@@ -61,13 +51,6 @@ Rails.application.routes.draw do
         post 'signin' => 'quiz_admins/sessions#create', as: 'signin'
         delete 'signout' => 'quiz_admins/sessions#destroy', as: 'signout'
       end
-
-      devise_scope :user do
-        post 'users_signin' => 'users/sessions#create', as: 'users_signin'
-        delete 'users_signout' => 'users/sessions#destroy', as: 'users_signout'
-      end
-
-
 
       resources :users do
         collection do
@@ -106,7 +89,6 @@ Rails.application.routes.draw do
           post :add_grades
           post :update_grades
           get :get_grades
-          get :quiz_results
         end
         resources :questions, :except => [:index] do
           member do
@@ -148,7 +130,6 @@ Rails.application.routes.draw do
       get :quiz_shopping
       get :quiz_queue
       get :weekly_report
-      get :quiz_results
     end
     resources :quizzes do
 

@@ -3,7 +3,7 @@
 # Table name: tutorials
 #
 #  id         :integer          not null, primary key
-#  page_name  :string(255)
+#  page_name  :string
 #  created_at :datetime
 #  updated_at :datetime
 #
