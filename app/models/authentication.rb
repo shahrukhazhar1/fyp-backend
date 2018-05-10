@@ -3,7 +3,7 @@
 # Table name: authentications
 #
 #  id            :integer          not null, primary key
-#  auth_token    :string
+#  auth_token    :string(255)
 #  quiz_user_id  :integer
 #  quiz_admin_id :integer
 #  created_at    :datetime

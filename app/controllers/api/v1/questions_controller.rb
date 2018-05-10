@@ -48,6 +48,19 @@ class Api::V1::QuestionsController < ApplicationController
     @question = @quiz.questions.build(question_params)
     
     if @question.save
+
+      if params[:label_all]
+        s = params[:label_all].count - 1
+        for i in 0..s
+          question_label = QuestionLabel.new
+          question_label.question_id = @question.id
+          question_label.label_id = params[:label_all][i]
+          question_label.save
+        end
+      end
+
+
+
       update_pdf_preview(@question,params[:question])
       render :status => 200, :json => { success: true, quiz: @quiz, question: @question }
     else
@@ -75,7 +88,7 @@ class Api::V1::QuestionsController < ApplicationController
     @quiz = Quiz.find_by_id params[:quiz_id]
     @question = Question.find_by_id params[:id]
     if @question && @quiz
-      render :status => 200, :json => { success: true, quiz: @quiz, question: @question, questions: JSON.parse(@quiz.questions.order('id').all.to_json(request_type: "question"))}
+      render :status => 200, :json => { success: true, question_labels: @question.labels.collect(&:name), labels: Label.all, quiz: @quiz, question: @question, questions: JSON.parse(@quiz.questions.order('id').all.to_json(request_type: "question"))}
 
     else
       render :status => 404, :json => { success: false, error: 'Question not found' }
@@ -87,13 +100,23 @@ class Api::V1::QuestionsController < ApplicationController
     if params[:question].is_a?(String)
       params[:question] = eval params[:question]
     end
-    # puts "Params"*50
-    # puts params[:question]
+
     @quiz = Quiz.find_by_id params[:question][:quiz_id]
     @question = Question.find_by_id params[:question][:id]
 
     if @question.update question_params
-      update_pdf_preview(@question,params[:question])
+      if params[:label_all]
+        
+        @question.question_labels.destroy_all
+
+        s = params[:label_all].count - 1
+        for i in 0..s
+          question_label = QuestionLabel.new
+          question_label.question_id = @question.id
+          question_label.label_id = params[:label_all][i]
+          question_label.save
+        end
+      end
       render :status => 200, :json => { success: true, quiz: @quiz, question: @question }
     else
       render :status => 403, :json => { success: false, error: @question.errors }

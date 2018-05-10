@@ -3,8 +3,8 @@
 # Table name: coupons
 #
 #  id                :integer          not null, primary key
-#  code              :string
-#  free_trial_length :string
+#  code              :string(255)
+#  free_trial_length :string(255)
 #  created_at        :datetime
 #  updated_at        :datetime
 #

@@ -12,6 +12,7 @@
 #  passed             :boolean          default(FALSE)
 #  passing_percentage :integer
 #  passing_val        :integer
+#  quiz_user_id       :integer
 #
 # Indexes
 #
@@ -22,6 +23,7 @@
 class QuizResult < ActiveRecord::Base
 
   belongs_to :device
+  belongs_to :quiz_user
   belongs_to :quiz_selection
   after_create :decide_result
   has_one :quiz, through: :quiz_selection
@@ -32,6 +34,40 @@ class QuizResult < ActiveRecord::Base
 
   def quiz
     quiz_selection.quiz
+  end
+
+  def compile_result
+    str=""
+    if quiz_selection.present?
+      quiz_selection.quiz.questions.each do |q|
+        str+= q.labels.collect(&:name).join(",")
+        str+=","
+      end
+      str = str.split(",").uniq
+    end
+    str
+  end
+
+  def get_courses
+    # ["Programming Fundamental","OOP","DSA","Compiler Construction"]
+    course_lists=""
+    if quiz_selection.present? && quiz_selection.quiz.present? && quiz_selection.quiz.questions
+      quiz_selection.quiz.questions.each do |q|
+        # str+= q.labels.collect(&:name).join(",")
+        # str+=","
+        q.labels && q.labels.each do |ql|
+          course_lists = ql.courses.collect(&:name).join(",")
+          course_lists+=","
+        end
+      end
+      course_lists = course_lists.split(",").uniq    
+      # # quiz_selection.quiz.questions.each do |q|
+      #   str+= quiz_selection.quiz.course.labels.collect(&:name).join(",")
+      #   str+=","
+      # # end
+      # str.split(",").uniq
+    end
+    course_lists
   end
 
   scope :recent, -> { where("DATE(quiz_results.created_at) > ?", (Date.today).to_time - 7.days) }
@@ -64,6 +100,19 @@ class QuizResult < ActiveRecord::Base
     self.passing_percentage = score
     self.passing_val = self.passing_percentage
     self.save!
+  end
+
+  def as_json(options={})
+    self.reload
+    {
+      :result_labels  => self.compile_result,
+      :course_labels => self.get_courses,
+      :passed                =>  self.passed,
+      :id                  =>  self.id,
+      :created_at          =>  self.created_at,
+      :updated_at          =>  self.updated_at,
+      :quiz_name            => self.quiz_selection.quiz.name
+    }
   end
 
 end

@@ -3,9 +3,9 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
-#  email                  :string           default(""), not null
-#  encrypted_password     :string           default(""), not null
-#  reset_password_token   :string
+#  email                  :string(255)      default(""), not null
+#  encrypted_password     :string(255)      default(""), not null
+#  reset_password_token   :string(255)
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
 #  sign_in_count          :integer          default(0), not null
@@ -13,17 +13,17 @@
 #  last_sign_in_at        :datetime
 #  current_sign_in_ip     :inet
 #  last_sign_in_ip        :inet
-#  confirmation_token     :string
+#  confirmation_token     :string(255)
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  authentication_token   :string
-#  stripe_id              :string
-#  first_name             :string
-#  last_name              :string
+#  authentication_token   :string(255)
+#  stripe_id              :string(255)
+#  first_name             :string(255)
+#  last_name              :string(255)
 #  send_email             :boolean          default(TRUE)
-#  tutorial_screen        :string           default("0")
+#  tutorial_screen        :string(255)      default("0")
 #  tutorial_seen          :boolean          default(TRUE)
 #  subscription_start_at  :datetime
 #

@@ -8,15 +8,15 @@
 #  priority                   :integer
 #  created_at                 :datetime
 #  updated_at                 :datetime
-#  hint                       :string
+#  hint                       :string(255)
 #  comment                    :text
 #  sample                     :boolean          default(FALSE)
 #  study_guide                :text
-#  study_guide_attachment     :string
-#  attachment                 :string
+#  study_guide_attachment     :string(255)
+#  attachment                 :string(255)
 #  latex                      :boolean          default(FALSE)
-#  question_guide_pdf_preview :string
-#  guide_filename             :string
+#  question_guide_pdf_preview :string(255)
+#  guide_filename             :string(255)
 #
 # Indexes
 #
@@ -28,6 +28,9 @@ class Question < ActiveRecord::Base
   has_many :answers, dependent: :destroy
   # has_one  :correct_answer, :class => 'Answer'
   belongs_to :quiz, :touch => true
+
+  has_many :question_labels, dependent: :destroy
+  has_many :labels, through: :question_labels
 
   validates :text, :presence => true, unless: ->(user) { user.attachment.present? }
   validates :attachment, presence: true, unless: ->(user){ user.text.present? }
@@ -74,28 +77,31 @@ class Question < ActiveRecord::Base
         :study_guide => self.study_guide,
         :question_guide_pdf_preview_url => self.question_guide_pdf_preview.url,
         :guide_filename => self.guide_filename,
+        :labels => self.labels.collect(&:name)
       }
     else
       self.reload
       {
         :quiz_id => self.quiz_id,
         :text =>  self.text,
-        :latex => self.latex,
-        :attachment_url => self.attachment_url,
-        :priority =>  self.priority,
+        # :latex => self.latex,
+        # :attachment_url => self.attachment_url,
+        # :priority =>  self.priority,
         :id =>  self.id,
-        :comment =>  self.comment,
+        # :comment =>  self.comment,
         :created_at =>  self.created_at,
         :updated_at =>  self.updated_at,
         :hint =>  self.hint,
         :sample => self.sample,
         :answers =>  self.answers,
         :question_number => self.question_number,
-        :comments => self.comments.order('id'),
-        :study_guide_attachment_url => self.study_guide_attachment_url,
+        # :comments => self.comments.order('id'),
+        # :study_guide_attachment_url => self.study_guide_attachment_url,
         :study_guide => self.study_guide,
-        :question_guide_pdf_preview_url => self.question_guide_pdf_preview.url,
-        :guide_filename => self.guide_filename,
+        # :question_guide_pdf_preview_url => self.question_guide_pdf_preview.url,
+        # :guide_filename => self.guide_filename,
+        :labels => self.labels.collect(&:name)
+        
       }
     end
   end

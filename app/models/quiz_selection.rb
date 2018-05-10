@@ -2,14 +2,15 @@
 #
 # Table name: quiz_selections
 #
-#  id         :integer          not null, primary key
-#  device_id  :integer
-#  quiz_id    :integer
-#  priority   :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  owner      :boolean          default(FALSE)
-#  active     :boolean          default(TRUE)
+#  id           :integer          not null, primary key
+#  device_id    :integer
+#  quiz_id      :integer
+#  priority     :integer
+#  created_at   :datetime
+#  updated_at   :datetime
+#  owner        :boolean          default(FALSE)
+#  active       :boolean          default(TRUE)
+#  quiz_user_id :integer
 #
 # Indexes
 #
@@ -23,6 +24,7 @@ class QuizSelection < ActiveRecord::Base
   default_scope { where(active: true) }
 
   belongs_to :device, :touch => true
+  belongs_to :quiz_user, :touch => true
   belongs_to :quiz
   has_many :quiz_results
   before_create :set_priority
@@ -36,6 +38,11 @@ class QuizSelection < ActiveRecord::Base
       quiz = find_or_create_by(quiz_id: quiz_id, device_id: device_id) if device_id && quiz_id
       quiz.update(active:true) if quiz.persisted?
     end
+  end
+
+  def self.quiz_selection(quiz_user_id, quiz_id)
+    quiz = find_or_create_by(quiz_id: quiz_id, quiz_user_id: quiz_user_id) if quiz_user_id && quiz_id
+    quiz.update(active:true) if quiz.persisted?
   end
   
   def change_order(move)

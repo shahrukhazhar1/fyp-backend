@@ -12,6 +12,10 @@ json.device do |json|
     json.subject    quiz.subject
     json.grades      quiz.grades.collect(&:name)
     json.passing_percentage quiz.passing_percentage
+    json.supplement_pdf quiz.attachment.url.to_s
+    json.supplement_text quiz.supplement_text
+    json.quiz_guide_text quiz.quiz_guide
+    json.quiz_guide_url quiz.quiz_guide_attachment.url.to_s
     json.questions quiz.questions do |question|
       json.id       question.id
       json.text     question.text

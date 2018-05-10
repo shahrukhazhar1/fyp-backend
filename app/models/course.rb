@@ -13,6 +13,8 @@
 
 class Course < ActiveRecord::Base
 	has_many :quizzes
+  has_many :course_labels, dependent: :destroy
+  has_many :labels, through: :course_labels
   mount_uploader :attachment, ::MaterialUploader
   mount_uploader :attachment2, ::MaterialUploader
 
@@ -25,7 +27,10 @@ class Course < ActiveRecord::Base
       :attachment2_url  =>  self.attachment2.try(:url),
       :support => self.support,
       :created_at   =>  self.created_at,
-      :updated_at =>  self.updated_at
+      :updated_at =>  self.updated_at,
+      :labels => self.labels.collect(&:name),
+      :quizzes => self.quizzes
+
     }
   end
 

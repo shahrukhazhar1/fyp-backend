@@ -3,11 +3,11 @@
 # Table name: subscriptions
 #
 #  id            :integer          not null, primary key
-#  stripe_id     :string
+#  stripe_id     :string(255)
 #  plan_id       :integer
-#  last_four     :string
+#  last_four     :string(255)
 #  coupon_id     :integer
-#  card_type     :string
+#  card_type     :string(255)
 #  current_price :float
 #  user_id       :integer
 #  created_at    :datetime

@@ -3,34 +3,36 @@
 # Table name: quizzes
 #
 #  id                     :integer          not null, primary key
-#  name                   :string
-#  subject                :string
+#  name                   :string(255)
+#  subject                :string(255)
 #  created_at             :datetime
 #  updated_at             :datetime
 #  status                 :integer          default(0)
-#  topic                  :string
+#  topic                  :string(255)
 #  description            :text
 #  position               :integer
 #  row_order              :integer
 #  passing_percentage     :integer
 #  quiz_user_id           :integer
-#  quiz_status            :string
+#  quiz_status            :string(255)
 #  study_guide_text       :text
 #  study_guide_comment    :text
 #  approval_date          :datetime
-#  approved_by            :string
-#  test_prep              :string
-#  attachment             :string
+#  approved_by            :string(255)
+#  test_prep              :string(255)
+#  attachment             :string(255)
 #  supplement_text        :text
 #  quiz_guide             :text
-#  quiz_guide_attachment  :string
-#  supplement_pdf_preview :string
-#  quiz_guide_pdf_preview :string
-#  supplement_filename    :string
-#  guide_filename         :string
+#  quiz_guide_attachment  :string(255)
+#  supplement_pdf_preview :string(255)
+#  quiz_guide_pdf_preview :string(255)
+#  supplement_filename    :string(255)
+#  guide_filename         :string(255)
+#  course_id              :integer
 #
 # Indexes
 #
+#  index_quizzes_on_course_id     (course_id)
 #  index_quizzes_on_quiz_user_id  (quiz_user_id)
 #
 
@@ -42,6 +44,7 @@ class Quiz < ActiveRecord::Base
   has_many :devices, :through => :quiz_selections
 
   belongs_to :quiz_user
+  belongs_to :course
 
   # belongs_to :grade
 
@@ -50,7 +53,7 @@ class Quiz < ActiveRecord::Base
 
   enum :status => [:awaiting_approval, :approved, :rejected]
 
-  validates :name, :subject, :presence => true
+  validates :name, :presence => true
 
   after_touch :touch_devices
   after_save :touch_devices
@@ -172,34 +175,35 @@ class Quiz < ActiveRecord::Base
     {
       :quiz_user_name    => self.quiz_user.try(:email),
       :name                =>  self.name,
-      :subject               =>  self.subject,
       :id                  =>  self.id,
       :created_at          =>  self.created_at,
       :topic          =>  self.topic,
       :description          =>  self.description,
-      :attachment_url    => self.attachment_url,
+      # :attachment_url    => self.attachment_url,
       :supplement_text => self.supplement_text,
-      :position          =>  self.position,
+      # :position          =>  self.position,
       :passing_percentage          =>  self.passing_percentage,
       :quiz_user_id          =>  self.quiz_user_id,
       :quiz_status          =>  self.quiz_status,
       :study_guide_text          =>  self.study_guide_text,
-      :study_guide_comment          =>  self.study_guide_comment,
+      # :study_guide_comment          =>  self.study_guide_comment,
       :approval_date          =>  self.approval_date,
       :approved_by          =>  self.approved_by,
-      :test_prep          =>  self.test_prep,
-      :row_order          =>  self.row_order,
+      # :test_prep          =>  self.test_prep,
+      # :row_order          =>  self.row_order,
       :grades         =>  self.grades.collect(&:name),
       :questions         =>  self.questions,
-      :default_question => Question.first.text,
+      :default_question => Question.first.try(:text),
       :first_question         =>  self.questions.try(:first),
-      :comments => self.comments.order('id'),
-      :quiz_guide_attachment_url => self.quiz_guide_attachment_url,
-      :quiz_guide => self.quiz_guide,
-      :quiz_guide_attachment_preview => self.quiz_guide_pdf_preview.url,
-      :supplement_pdf_preview => self.supplement_pdf_preview.url,
-      :supplement_filename => self.supplement_filename,
-      :guide_filename => self.guide_filename,
+      # :comments => self.comments.order('id'),
+      # :quiz_guide_attachment_url => self.quiz_guide_attachment_url,
+      # :quiz_guide => self.quiz_guide,
+      # :quiz_guide_attachment_preview => self.quiz_guide_pdf_preview.url,
+      # :supplement_pdf_preview => self.supplement_pdf_preview.url,
+      # :supplement_filename => self.supplement_filename,
+      # :guide_filename => self.guide_filename,
+      :course_id  =>  self.course_id,
+      :course_name => self.course.try(:name)
 
     }
   end

@@ -11,4 +11,7 @@
 class Label < ActiveRecord::Base
 	has_many :question_labels, dependent: :destroy
 	has_many :questions, through: :question_labels
+
+	has_many :course_labels, dependent: :destroy
+	has_many :courses, through: :course_labels
 end

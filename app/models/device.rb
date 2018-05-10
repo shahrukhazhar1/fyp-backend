@@ -4,11 +4,11 @@
 #
 #  id             :integer          not null, primary key
 #  user_id        :integer
-#  name           :string
-#  device_id      :string
+#  name           :string(255)
+#  device_id      :string(255)
 #  created_at     :datetime
 #  updated_at     :datetime
-#  avatar         :string
+#  avatar         :string(255)
 #  is_enabled     :boolean          default(FALSE)
 #  default_device :boolean          default(FALSE)
 #  send_mail      :boolean          default(TRUE)
@@ -65,10 +65,16 @@ class Device < ActiveRecord::Base
   end
 
   def subscription_start_date
-    subscription.try(:billings).try(:last).try(:start_date)
+    start_date = subscription.stripe_subscription.current_period_start
+    if start_date.present?
+      Time.at(start_date).strftime("%d/%m/%Y")
+    end 
   end
 
   def subscription_end_date
-    subscription.try(:billings).try(:last).try(:end_date)
+    end_date = subscription.stripe_subscription.current_period_end
+    if end_date.present?
+      Time.at(end_date).strftime("%d/%m/%Y")
+    end
   end
 end

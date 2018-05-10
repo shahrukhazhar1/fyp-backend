@@ -29,6 +29,15 @@ class Api::V1::CoursesController < ApplicationController
     
     @course = Course.new(course_params)
     if @course.save
+      if params[:label_all]
+        s = params[:label_all].count - 1
+        for i in 0..s
+          course_label = CourseLabel.new
+          course_label.course_id = @course.id
+          course_label.label_id = params[:label_all][i]
+          course_label.save
+        end
+      end
       return render :status => 200, :json => { success: true, course: @course }
     else
       error_message = ""
@@ -53,10 +62,26 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     if @course.update(course_params)
+      if params[:label_all]
+        
+        @course.course_labels.destroy_all
+
+        s = params[:label_all].count - 1
+        for i in 0..s
+          course_label = CourseLabel.new
+          course_label.course_id = @course.id
+          course_label.label_id = params[:label_all][i]
+          course_label.save
+        end
+      end
       return render :status => 200, :json => { success: true, course: @course }
     else
       return render :status => 400, :json => { success: false}
     end
+  end
+
+  def fetch_labels
+    return render :status => 200, :json => { success: true, labels: Label.all }
   end
 
 
@@ -65,7 +90,7 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def edit
-    render :status => 200, :json => { success: true, course: @course }
+    render :status => 200, :json => { success: true, course: @course, labels: Label.all, course_labels: @course.labels.collect(&:name) }
   end
 
   

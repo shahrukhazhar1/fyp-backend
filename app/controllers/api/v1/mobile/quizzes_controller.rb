@@ -1,6 +1,6 @@
 class Api::V1::Mobile::QuizzesController < ApplicationController
   before_action :verify_api_req
-  before_action :load_quiz, :except => [:index, :new, :create]
+  before_action :load_quiz, :except => [:index, :new, :create, :api_quiz_results]
   
 
   def index

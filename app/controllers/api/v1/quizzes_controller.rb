@@ -67,7 +67,7 @@ class Api::V1::QuizzesController < ApplicationController
   end
 
   def get_grades
-    render :status => 200, :json => { success: true, grades: Grade.all }
+    render :status => 200, :json => { success: true, grades: Grade.all, courses: Course.all }
   end
 
   def new_verison
@@ -197,9 +197,8 @@ class Api::V1::QuizzesController < ApplicationController
     @quiz = Quiz.new(quiz_params)
     @quiz.quiz_user_id = quiz_user.id
     if @quiz.save
-
-      update_pdf_preview(@quiz,params[:quiz])
-
+      QuizSelection.quiz_selection(quiz_user.id, @quiz.id)
+      
       if params[:grade_all]
         s = params[:grade_all].count - 1
         for i in 0..s
@@ -243,8 +242,6 @@ class Api::V1::QuizzesController < ApplicationController
 
     if @quiz.update(quiz_params)
 
-      update_pdf_preview(@quiz,params[:quiz])
-
       if @current_quiz_user.present? && @quiz.quiz_status == 'rejected'
         @quiz.quiz_status = 'incomplete'
         @quiz.save
@@ -272,14 +269,14 @@ class Api::V1::QuizzesController < ApplicationController
   def show
     user = @current_quiz_user
     @questions = @quiz.questions
-    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all }
+    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all, labels: Label.all }
   end
 
   def edit
     # user = @current_quiz_user
     
     @questions = @quiz.questions
-    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all }
+    render :status => 200, :json => { success: true, quiz: @quiz, questions: @questions, grades: Grade.all, labels: Label.all }
   end
 
   # def update_row_order
@@ -311,6 +308,11 @@ class Api::V1::QuizzesController < ApplicationController
     end
   end
 
+  def quiz_results
+    render status: 200, json: { success: true, quiz_results: @current_quiz_user.quiz_results }
+
+  end
+
   def reject
     # quiz_admin = QuizAdmin.find_by_authentication_token params[:auth_token]
     auth_token = Authentication.find_by_auth_token(params[:auth_token])
@@ -329,7 +331,7 @@ class Api::V1::QuizzesController < ApplicationController
   private
 
     def quiz_params
-      params.require(:quiz).permit :name, :subject, :grade_id, :passing_percentage, :topic, :description, :test_prep, :attachment, :supplement_text, :quiz_guide, :quiz_guide_attachment
+      params.require(:quiz).permit :name, :subject, :grade_id, :passing_percentage, :topic, :description, :test_prep, :attachment, :supplement_text, :quiz_guide, :quiz_guide_attachment, :course_id
     end
 
     def load_device
