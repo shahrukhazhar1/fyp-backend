@@ -4,7 +4,7 @@ class Api::V1::Mobile::QuizResultsController < ApplicationController
   before_action :load_quiz_selection
 
   def create
-    binding.pry
+    # binding.pry
     qr = QuizResult.new
     qr.correct=params[:correct]
     qr.wrong=params[:wrong]

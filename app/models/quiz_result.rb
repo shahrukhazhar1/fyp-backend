@@ -38,8 +38,14 @@ class QuizResult < ActiveRecord::Base
 
   def compile_result
     str=""
+
     if quiz_selection.present?
-      quiz_selection.quiz.questions.each do |q|
+      correct_qs = []
+      quiz_selection.quiz_results do |rst|
+        correct_qs << rst.correct
+      end
+      # quiz_selection.quiz.questions
+      Question.find(correct_qs).each do |q|
         str+= q.labels.collect(&:name).join(",")
         str+=","
       end
