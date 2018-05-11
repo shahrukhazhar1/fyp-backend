@@ -11,6 +11,8 @@ class Api::V1::Mobile::QuizResultsController < ApplicationController
     qr.quiz_user_id = @current_quiz_api_user.id
     qr.quiz_selection_id = @quiz_selection.id
     # render :status => qr.save ? :created : :unprocessable_entity
+
+    
     if qr.save
       return render :status => 200, :json => { success: true, message: "Quiz Result added successfully" }
     else
